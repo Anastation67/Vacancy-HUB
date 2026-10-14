@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -61,7 +61,7 @@ a{color:var(--teal)}
 .brand{display:flex;align-items:baseline;gap:9px;background:none;border:0;padding:0}
 .brand b{font-family:'Fraunces',serif;font-weight:600;font-size:19px;letter-spacing:-0.01em}
 .brand span{font-size:12px;color:var(--ink-soft)}
-.crumbs{margin-left:auto;display:flex;gap:2px;flex-wrap:wrap}
+
 .crumb{
   background:none;border:1px solid transparent;border-radius:8px;
   padding:6px 12px;font-size:13px;color:var(--ink-soft);
@@ -223,10 +223,127 @@ label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px}
 .co button:hover{color:var(--rose)}
 .foot{border-top:1px solid var(--line);margin-top:44px;padding-top:20px;font-size:12.5px;color:var(--ink-soft);max-width:70ch}
 
+/* ---------- right-side petals ---------- */
+.rail{
+  position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:45;
+  display:flex;flex-direction:column;gap:7px;
+}
+.petal{
+  writing-mode:vertical-rl;text-orientation:mixed;
+  background:var(--surface);color:var(--ink-soft);
+  border:1px solid var(--line);border-right:0;
+  border-radius:16px 0 0 16px;padding:18px 10px;
+  font-size:13px;letter-spacing:.02em;
+  box-shadow:-1px 1px 3px rgba(46,39,33,.05);
+  transition:background .15s,color .15s,padding .15s;
+}
+.petal:hover{background:var(--surface-2);color:var(--ink);padding-right:14px}
+.petal[aria-current="page"]{background:var(--teal);border-color:var(--teal);color:#fff}
+body{padding-right:52px}
+@media (max-width:620px){
+  .petal{padding:13px 7px;font-size:12px;border-radius:12px 0 0 12px}
+  body{padding-right:38px}
+}
+
+/* ---------- paste row ---------- */
+.paste-row{display:flex;gap:10px;align-items:stretch}
+.paste-row textarea{flex:1 1 auto}
+.import-tall{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  flex:0 0 48px;border-radius:10px;padding:14px 0;font-weight:600;
+}
+.paste-foot{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:10px}
+
+/* ---------- info tooltip ---------- */
+.info{position:relative;display:inline-flex}
+.info-dot{
+  width:22px;height:22px;border-radius:50%;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-soft);font-size:13px;line-height:1;
+  display:flex;align-items:center;justify-content:center;padding:0;
+}
+.info-dot:hover{border-color:var(--teal);color:var(--teal)}
+.info-bubble{
+  position:absolute;right:0;bottom:calc(100% + 8px);width:290px;
+  background:var(--ink);color:#F7F1E8;border-radius:10px;padding:10px 12px;
+  font-size:12.5px;line-height:1.45;opacity:0;visibility:hidden;
+  transition:opacity .12s;z-index:60;box-shadow:0 6px 20px rgba(46,39,33,.22);
+}
+.info:hover .info-bubble,.info:focus-within .info-bubble{opacity:1;visibility:visible}
+
+/* ---------- facts card ---------- */
+.facts{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;margin-bottom:24px;
+}
+.facts h3{margin-bottom:4px}
+.facts .facts-sub{font-size:13px;color:var(--ink-soft);margin-bottom:14px}
+.fact{display:grid;grid-template-columns:148px 1fr;gap:12px;padding:7px 0;border-top:1px solid var(--line)}
+.fact:first-of-type{border-top:0}
+.fact dt{font-size:12.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
+.fact dd{margin:0;font-size:13.5px}
+@media (max-width:620px){ .fact{grid-template-columns:1fr;gap:2px} }
+
+/* ---------- chart ---------- */
+.chart-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:20px;margin-top:16px;
+}
+.chart-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+.chart-head .seg{margin-left:auto}
+.chart-sub{font-size:13px;color:var(--ink-soft);margin-bottom:16px;max-width:62ch}
+.chart-card svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--ink-soft)}
+.legend span{display:flex;align-items:center;gap:7px}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.sw-a{background:var(--teal-deep)}
+.sw-b{background:#D9B79A}
+.chart-empty{font-size:13.5px;color:var(--ink-soft);padding:26px 0}
+
+/* ---------- projects ---------- */
+.proj{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:24px}
+.proj>summary{
+  list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:10px;
+  font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:16px;
+}
+.proj>summary::-webkit-details-marker{display:none}
+.proj>summary::before{content:"▸";color:var(--ink-soft);font-size:13px;font-family:'Archivo',sans-serif}
+.proj[open]>summary::before{content:"▾"}
+.proj>summary span{font-family:'Archivo',sans-serif;font-weight:400;font-size:13px;color:var(--ink-soft);margin-left:auto}
+.proj-body{padding:0 20px 18px}
+.proj-item{border-top:1px solid var(--line)}
+.proj-item>summary{
+  list-style:none;cursor:pointer;padding:12px 2px;font-weight:600;font-size:14px;
+  display:flex;gap:8px;align-items:baseline;
+}
+.proj-item>summary::-webkit-details-marker{display:none}
+.proj-item>summary::before{content:"+";color:var(--ink-soft);font-weight:400}
+.proj-item[open]>summary::before{content:"–"}
+.proj-stack{font-size:12px;color:var(--ink-soft);margin:0 0 8px 14px}
+.proj-item ul{margin:0 0 14px;padding-left:30px;font-size:13.5px}
+.proj-item li{margin-bottom:6px}
+.proj-item b{font-weight:600}
+
+/* ---------- sponsor blocks ---------- */
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.sp-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.sp-box.drop{border-color:var(--teal);background:var(--teal-wash)}
+.sp-box h3{font-size:15px}
+.sp-box .sp-note{font-size:12.5px;color:var(--ink-soft);margin:4px 0 12px}
+.sp-chips{display:flex;flex-wrap:wrap;gap:6px;min-height:52px;align-content:flex-start}
+.chip{
+  font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:7px;padding:4px 8px;display:flex;gap:7px;align-items:center;cursor:grab;
+}
+.chip.dragging{opacity:.4}
+.chip button{background:none;border:0;padding:0;color:var(--ink-soft);font-size:13px;line-height:1}
+.chip button:hover{color:var(--teal)}
+.chip .x:hover{color:var(--rose)}
+.sp-add{display:flex;gap:8px;margin-top:12px}
+.sp-add input{flex:1 1 auto}
+
 @media (max-width:640px){
   .job-head{grid-template-columns:18px 36px 1fr auto;gap:10px}
   .job-body{padding-left:64px}
-  .crumbs{width:100%;margin-left:0;overflow-x:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
@@ -238,130 +355,108 @@ label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px}
     <button class="brand" onclick="go('hub')">
       <b>Vacancy Hub</b><span id="brandWho">London</span>
     </button>
-    <nav class="crumbs" id="crumbs"></nav>
   </div>
 </header>
+
+<nav class="rail" id="rail" aria-label="Sections"></nav>
 
 <main class="wrap">
 
 <!-- ============ HUB ============ -->
 <section id="v-hub">
-  <div class="bar" id="hubLinks" style="margin-top:18px;margin-bottom:4px"></div>
+  <div class="bar" id="hubLinks" style="margin-top:22px;margin-bottom:18px"></div>
 
-  <div class="hero">
-    <div class="hero-top">
-      <div class="hero-count mono" id="heroCount">0</div>
-      <p class="hero-note" id="heroNote">Пока пусто. Вставь JSON, который выдал чат проекта, во «Входящих».</p>
-    </div>
-  </div>
-
-  <div class="plates">
+  <div class="plates" style="margin-top:0">
     <button class="plate primary" onclick="go('inbox')">
       <div class="plate-n mono" id="pInbox">0</div>
-      <div class="plate-t">Входящие</div>
-      <div class="plate-d">Импортировать JSON из чата проекта</div>
+      <div class="plate-t">Inbox</div>
+      <div class="plate-d">Import the JSON your project chat returned</div>
     </button>
     <button class="plate" onclick="go('shortlist')">
       <div class="plate-n mono" id="pShort">0</div>
-      <div class="plate-t">Шортлист</div>
-      <div class="plate-d">Сохранённые и отправленные заявки</div>
+      <div class="plate-t">Tracking</div>
+      <div class="plate-d">Saved roles and where each one stands</div>
     </button>
-    <button class="plate" onclick="go('profile')">
-      <div class="plate-n mono" id="pSkillCount">0</div>
-      <div class="plate-t">Профиль</div>
-      <div class="plate-d">Навыки и цели, зафиксированные в инструкции проекта</div>
-    </button>
-    <button class="plate" onclick="go('companies')">
-      <div class="plate-n mono" id="pCos">0</div>
-      <div class="plate-t">Компании</div>
-      <div class="plate-d">Список для скана — промпт для чата собирается здесь</div>
-    </button>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-head">
+      <h3>Daily activity</h3>
+      <div class="seg" id="chartRangeSeg" role="group" aria-label="Chart range"></div>
+    </div>
+    <p class="chart-sub">
+      Dark bar — roles added to Inbox that day.
+      Light bar — roles moved into Tracking that day.
+    </p>
+    <div id="chartBox"></div>
+    <div class="legend">
+      <span><i class="sw sw-a"></i>added to Inbox</span>
+      <span><i class="sw sw-b"></i>moved to Tracking</span>
+    </div>
   </div>
 </section>
 
 <!-- ============ INBOX ============ -->
 <section id="v-inbox" class="section hidden">
   <div class="section-head">
-    <h2>Входящие</h2>
-    <p>Вставь JSON-массив, который вернул чат проекта.</p>
+    <h2>Inbox</h2>
+    <p>Paste the JSON array your project chat returned.</p>
   </div>
   <div id="inboxErr"></div>
   <div class="field">
-    <label for="pasteBox">JSON из чата</label>
-    <textarea id="pasteBox" placeholder="[{&quot;title&quot;: ... }] — вставь сюда весь массив, или содержимое файла резервной копии."></textarea>
-  </div>
-  <div class="bar">
-    <span style="font-size:13px;color:var(--ink-soft)">Пометить как:</span>
-    <div class="seg" role="group" aria-label="Метка источника при импорте">
-      <button id="srcMail" aria-pressed="true" onclick="setImportSource('mail')">Почта</button>
-      <button id="srcTg" aria-pressed="false" onclick="setImportSource('telegram')">Telegram</button>
-      <button id="srcWeb" aria-pressed="false" onclick="setImportSource('web')">Веб-поиск</button>
+    <label for="pasteBox">JSON from the chat</label>
+    <div class="paste-row">
+      <button class="btn import-tall" onclick="importJSON()">Import</button>
+      <textarea id="pasteBox" placeholder="[{&quot;title&quot;: ... }] — paste the whole array here, or the contents of a backup file."></textarea>
     </div>
-  </div>
-  <div class="bar">
-    <button class="btn" onclick="importJSON()">Импортировать</button>
-    <button class="btn ghost small" onclick="clearPaste()">Очистить поле</button>
+    <div class="paste-foot">
+      <button class="btn ghost small" onclick="clearPaste()">Clear field</button>
+      <button class="btn ghost small" onclick="copyAllForRescore(this)">Copy for re-scoring</button>
+      <span class="info">
+        <button class="info-dot" aria-label="What the re-scoring button does">i</button>
+        <span class="info-bubble" role="tooltip">
+          Collects every role in Inbox together with the descriptions you pasted into the
+          cards and puts a ready request on the clipboard. Paste it into the project chat,
+          get back updated JSON with the second pass, and import it here again.
+          Deleted, closed and rejected roles are left out.
+        </span>
+      </span>
+    </div>
   </div>
   <div class="log hidden" id="inboxLog"></div>
 
-  <div class="bar" style="margin-top:22px">
-    <button class="btn ghost" onclick="copyAllForRescore(this)">Скопировать список для переоценки</button>
-  </div>
-  <p style="font-size:13px;color:var(--ink-soft);max-width:60ch;margin-bottom:22px">
-    Берёт все вакансии, кроме скрытых, закрытых и отклонённых — их переоценивать незачем. Вставь
-    в чат проекта, получишь обновлённый JSON, импортируй его обратно сюда же.
-  </p>
-
-  <div class="bar">
-    <span style="font-size:13px;color:var(--ink-soft)">Уверенность:</span>
-    <div class="seg" id="inboxConfSeg" role="group" aria-label="Фильтр по уверенности"></div>
-  </div>
-  <div class="filter-bar">
+  <div class="filter-bar" style="margin-top:22px">
     <div class="search">
-      <input id="inboxSearch" placeholder="Фильтр по названию…" oninput="render()">
+      <input id="inboxSearch" placeholder="Filter by title…" oninput="render()">
     </div>
-    <select id="inboxCompany" onchange="render()">
-      <option value="">Все компании</option>
-    </select>
-    <select id="inboxPlatform" onchange="render()">
-      <option value="">Все платформы</option>
-    </select>
-    <input id="inboxMinFit" type="number" min="0" max="100" placeholder="Мин. скор"
-           style="max-width:110px" oninput="render()">
-    <input id="inboxSkills" placeholder="Навыки: SQL, Python, статистика…"
-           style="min-width:220px" oninput="render()">
+    <input id="inboxCompany" placeholder="Company" style="min-width:180px;flex:0 1 220px" oninput="render()">
+    <input id="inboxSkills" placeholder="Skills: SQL, Python, statistics…"
+           style="min-width:220px;flex:1 1 240px" oninput="render()">
   </div>
   <div style="font-size:13px;color:var(--ink-soft);margin:-4px 0 14px" id="inboxCount"></div>
   <div id="inboxBulk"></div>
   <div class="jobs" id="inboxList"></div>
 </section>
 
-<!-- ============ SHORTLIST ============ -->
+<!-- ============ TRACKING ============ -->
 <section id="v-shortlist" class="section hidden">
   <div class="section-head">
-    <h2>Шортлист</h2>
-    <p>Статус меняется кнопками под вакансией. Заметки сохраняются при уходе из поля.</p>
+    <h2>Tracking</h2>
+    <p>Change status with the buttons under each role. Notes save when you leave the field.</p>
+    <button class="btn ghost small" onclick="copyTracking(this)">Copy everything for the chat</button>
   </div>
   <div class="bar">
-    <span style="font-size:13px;color:var(--ink-soft)">Статус:</span>
-    <div class="seg" id="shortStatusSeg" role="group" aria-label="Фильтр по статусу"></div>
-  </div>
-  <div class="bar">
-    <span style="font-size:13px;color:var(--ink-soft)">Уверенность:</span>
-    <div class="seg" id="shortConfSeg" role="group" aria-label="Фильтр по уверенности"></div>
+    <span style="font-size:13px;color:var(--ink-soft)">Status:</span>
+    <div class="seg" id="shortStatusSeg" role="group" aria-label="Filter by status"></div>
   </div>
   <div class="filter-bar">
     <div class="search">
-      <input id="shortSearch" placeholder="Фильтр по названию…" oninput="render()">
+      <input id="shortSearch" placeholder="Filter by title…" oninput="render()">
     </div>
-    <select id="shortCompany" onchange="render()">
-      <option value="">Все компании</option>
-    </select>
+    <input id="shortCompany" placeholder="Company" style="min-width:180px;flex:0 1 220px" oninput="render()">
     <select id="shortPlatform" onchange="render()">
-      <option value="">Все платформы</option>
+      <option value="">All platforms</option>
     </select>
-    <input id="shortMinFit" type="number" min="0" max="100" placeholder="Мин. скор"
-           style="max-width:110px" oninput="render()">
   </div>
   <div class="jobs" id="shortList"></div>
 </section>
@@ -369,94 +464,154 @@ label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px}
 <!-- ============ PROFILE ============ -->
 <section id="v-profile" class="section hidden">
   <div class="section-head">
-    <h2>Профиль</h2>
-    <p>Справочно: сама оценка идёт по инструкции проекта в чате, это поле её не подменяет.
-       Держи их синхронно, если меняешь одно.</p>
+    <h2>Profile</h2>
+    <p>For reference only: the scoring itself follows the project instruction in the chat, not this page.</p>
   </div>
+
+  <div class="facts">
+    <h3>Filter facts</h3>
+    <p class="facts-sub">These are the criteria the project chat selects roles by.</p>
+    <dl id="factsList" style="margin:0"></dl>
+  </div>
+
+  <details class="proj">
+    <summary>Projects<span>9 in total — expand any of them</span></summary>
+    <div class="proj-body">
+      <details class="proj-item">
+        <summary>1. Distributed CTR Prediction at Scale</summary>
+        <p class="proj-stack">course project, team of 3 · PySpark · Spark MLlib · Google Cloud Dataproc · Google Cloud Storage · Parquet</p>
+        <ul><li>Conducted distributed EDA on <b>40.4 million click-through records</b> using PySpark on Google Cloud Dataproc, identifying class imbalance, high-cardinality categorical features, and temporal patterns that informed modelling decisions.</li><li>Developed and tuned a global CTR prediction model using Spark MLlib logistic regression, inverse-frequency class weighting, temporal validation, and three-fold cross-validation; achieved <b>AUC-ROC of 0.681 on an 8.1 million-row test set</b>.</li><li>Ran scalability experiments across multiple data volumes and cluster configurations; the global model showed the strongest scaling behaviour and trained <b>10–15× faster</b> than partitioned alternatives.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>2. Evaluating Urban Activity Signals as Early Signs of Gentrification in London</summary>
+        <p class="proj-stack">MSc capstone, team of 3 · Python · R · panel data · long-difference regression · fixed effects · PCA · robustness testing</p>
+        <ul><li>Owned the signal-identification strand of a 3-person capstone: built <b>4 long-difference regression models</b> and designed a selection rule (joint significance across multiple social outcomes, consistent sign, and stability from single- to joint-predictor specifications) to isolate robust predictors from highly correlated urban-activity features.</li><li>Validated the three final signals — <b>night-time cultural/leisure density, Airbnb listings, and restaurant &amp; café spend</b> — with an independent PCA consistency check and cross-validation against a teammate's Bayesian hierarchical model, confirming they held across methods.</li><li>Ran placebo-lead, functional-form, and distributed-lag fixed-effects robustness tests that surfaced non-linear structure and established that the signals support <b>cross-sectional screening rather than within-area early warning</b>.</li><li>Reframed the output as a screening/prioritisation tool for urban planners and <b>presented and defended the approach to the LSE supervisor and the industry partner</b>.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>3. Sephora Exclusivity &amp; Customer Engagement Analysis</summary>
+        <p class="proj-stack">Python · OLS regression · NLP · sentiment analysis · K-means clustering · PCA</p>
+        <ul><li>Analysed <b>8,494 products and over 1 million customer reviews</b> to test whether Sephora-exclusive products were associated with higher customer engagement.</li><li>Built three OLS specifications controlling for price, category, ratings, review volume, and product attributes; found exclusive products received <b>16.5% more &ldquo;love&rdquo;</b> than comparable non-exclusive products (<b>p &lt; 0.001, 95% CI: 10.4%–22.9%, R² = 0.53</b>).</li><li>Combined sentiment analysis with K-means clustering and PCA, finding similar customer satisfaction across exclusive and non-exclusive products and only modest overrepresentation of exclusives among high-engagement products.</li><li>Translated modelling results into interpretable business insights on customer behaviour and product positioning.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>4. RAG System Evaluation &amp; Optimisation</summary>
+        <p class="proj-stack">Python · NLP · information retrieval</p>
+        <ul><li>Designed a structured evaluation framework for <b>6 RAG configurations</b>, benchmarking answer quality and retrieval relevance with <b>ROUGE, BERTScore, and NDCG</b> (plus ranking metrics <b>MAP@k</b> and <b>MRR</b>).</li><li>Compared embedding models (<b>mBERT vs RuBERT</b>) and distance metrics (<b>cosine, Euclidean, Jaccard</b>) to quantify their effect on retrieval ranking and stability.</li><li>Prepared training datasets and prompt templates, and selected the final configuration through metric-driven trade-offs across relevance, robustness, and retrieval performance.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>5. Imbalanced Classification on High-Dimensional Data</summary>
+        <p class="proj-stack">ML course project · Python · scikit-learn</p>
+        <ul><li>Analysed high-dimensional imbalanced hyperspectral data (<b>218 features, 215k+ samples</b>) using <b>macro-F1 and balanced accuracy</b> as evaluation metrics.</li><li>Benchmarked Logistic Regression, SVM, k-NN, and tree-based ensembles with cross-validation, feature scaling, PCA, and hyperparameter tuning.</li><li>Identified Logistic Regression as near-optimal through a <b>performance–runtime trade-off</b> analysis.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>6. NLP Text Processing Pipeline for Customer Analytics</summary>
+        <p class="proj-stack">Python · EDA · web scraping · NLP</p>
+        <ul><li>Built a web-scraping pipeline to collect <b>5,000+ TripAdvisor reviews</b>, then applied tokenisation, lemmatisation, stop-word filtering, and wordcloud-based EDA to identify key sentiment drivers.</li><li>Engineered text features and compared <b>BoW vs TF-IDF</b> vectorisation; trained and benchmarked <b>Logistic Regression and Naive Bayes</b> sentiment classifiers.</li><li>Integrated predictions into a terminal-based decision-support MVP for rating and review analysis to surface hospitality business insights.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>7. B2B Supplier Recommendation System</summary>
+        <p class="proj-stack">Python · matrix factorisation · Spark</p>
+        <ul><li>Implemented collaborative filtering using <b>SVD and NMF</b> for both personalised and non-personalised supplier recommendations.</li><li>Benchmarked strategies using <b>precision and recall</b>, and applied the models to a Spark-based dataset to assess scalability.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>8. Advanced Statistics / Econometrics Project</summary>
+        <p class="proj-stack">R · statistical inference · hypothesis testing</p>
+        <ul><li>Applied statistical inference and hypothesis testing to real datasets, evaluating model validity through confidence intervals, significance testing, and diagnostic checks.</li><li>Interpreted statistical outputs and communicated findings through structured tables and reproducible analysis.</li></ul>
+      </details>
+      <details class="proj-item">
+        <summary>9. Gazprombank Case Championship — 2nd place among 10 teams</summary>
+        <p class="proj-stack">financial modelling · risk assessment</p>
+        <ul><li>Conducted a <b>QIWI company valuation</b> including market analysis, financial modelling, and SWOT analysis, presented as a structured set of analytical findings.</li></ul>
+      </details>
+    </div>
+  </details>
+
   <div class="grid2">
-    <div>
-      <div class="field">
-        <label for="pName">Имя</label>
-        <input id="pName">
-      </div>
-      <div class="field">
-        <label for="pRoles">Целевые роли, через запятую</label>
-        <input id="pRoles">
-      </div>
-      <div class="field">
-        <label for="pLoc">Локация и формат</label>
-        <input id="pLoc">
-      </div>
-      <div class="field">
-        <label for="pIntake">Интейк и сроки</label>
-        <input id="pIntake">
-      </div>
+    <div class="field">
+      <label for="pPlatforms">Sources the roles come from</label>
+      <textarea id="pPlatforms" style="min-height:78px" placeholder="LinkedIn, Indeed, Telegram channels, company sites…"></textarea>
     </div>
-    <div>
-      <div class="field">
-        <label for="pSkills">Навыки, через запятую</label>
-        <textarea id="pSkills" style="min-height:96px"></textarea>
-      </div>
-      <div class="field">
-        <label for="pEdu">Образование</label>
-        <textarea id="pEdu" style="min-height:78px"></textarea>
-      </div>
-      <div class="field">
-        <label for="pAvoid">Что не показывать</label>
-        <textarea id="pAvoid" style="min-height:78px" placeholder="Senior-роли, unpaid, вакансии без визовой поддержки…"></textarea>
-      </div>
+    <div class="field">
+      <label for="pTracks">Target tracks</label>
+      <textarea id="pTracks" style="min-height:78px" placeholder="Data, Product, RA, Gig"></textarea>
     </div>
   </div>
+
   <div class="field">
-    <label>Быстрые ссылки</label>
+    <label>Quick links</label>
     <p style="font-size:13px;color:var(--ink-soft);margin-bottom:10px">
-      Появляются кнопками на «Главной». Ссылку с «диск» или «drive» в названии приложение
-      само откроет, когда ты впервые отметишь вакансию как «подаюсь» — в момент решения,
-      а не когда уже отправила.
+      These show up as buttons on Home. A link with &ldquo;drive&rdquo; in its name opens by itself
+      the first time you mark a role as applying — at the moment you decide, not after
+      you have already sent anything.
     </p>
     <div id="linksEditor"></div>
-    <button class="btn ghost small" onclick="addLink()">Добавить ссылку</button>
+    <button class="btn ghost small" onclick="addLink()">Add link</button>
   </div>
-  <div class="field">
-    <label for="pBackend">Адрес бэкенда, если уже поднят</label>
-    <input id="pBackend" placeholder="https://…  — оставь пустым, пока бэкенда нет">
+
+  <div class="bar" style="margin-top:4px">
+    <button class="btn" onclick="saveProfile()">Save profile</button>
+    <button class="btn ghost" onclick="exportBackup()">Download backup</button>
+    <span id="profSaved" style="font-size:13px;color:var(--teal)"></span>
   </div>
-  <button class="btn" onclick="saveProfile()">Сохранить профиль</button>
-  <button class="btn ghost" onclick="exportBackup()">Скачать резервную копию</button>
-  <span id="profSaved" style="margin-left:12px;font-size:13px;color:var(--teal)"></span>
+
+  <div class="field" style="margin-top:34px;padding-top:20px;border-top:1px solid var(--line)">
+    <label for="pBackend">Backend address, if you have one running</label>
+    <input id="pBackend" placeholder="https://…  — leave empty while there is no backend">
+  </div>
 </section>
 
 <!-- ============ COMPANIES ============ -->
 <section id="v-companies" class="section hidden">
   <div class="section-head">
-    <h2>Компании</h2>
-    <p>Список, по которому просишь чат проверить сайты. Разбор всё равно идёт в чате —
-       здесь только список и готовый текст запроса.</p>
+    <h2>Companies</h2>
+    <p>Who can sponsor a visa, and who was not found in the register.</p>
   </div>
-  <div class="field">
-    <label for="coAdd">Добавить: по одной в строке или через запятую</label>
-    <textarea id="coAdd" style="min-height:88px" placeholder="Revolut, Monzo, Wise…"></textarea>
+  <div class="sp-grid" style="margin-bottom:26px">
+    <div class="sp-box" id="spBoxLicensed">
+      <h3>Holds a sponsor licence</h3>
+      <p class="sp-note">Found in the Worker &amp; Temporary Worker register. The company <b>can</b>
+         sponsor — which is not the same as sponsoring this particular role.</p>
+      <div class="sp-chips" id="spLicensed"></div>
+      <div class="sp-add">
+        <input id="spAddLicensed" placeholder="Add a company…">
+        <button class="btn ghost small" onclick="addSponsor('licensed')">Add</button>
+      </div>
+    </div>
+    <div class="sp-box" id="spBoxUnlicensed">
+      <h3>No sponsorship rights</h3>
+      <p class="sp-note">Seen in job alerts but not found in the register. Could simply be a
+         different spelling of the name: drag it left once you have checked by hand.</p>
+      <div class="sp-chips" id="spUnlicensed"></div>
+      <div class="sp-add">
+        <input id="spAddUnlicensed" placeholder="Add a company…">
+        <button class="btn ghost small" onclick="addSponsor('unlicensed')">Add</button>
+      </div>
+    </div>
   </div>
-  <div class="bar">
-    <button class="btn" onclick="addCompanies()">Добавить</button>
-    <button class="btn ghost small" onclick="replaceCompanies()">Заменить весь список</button>
-  </div>
-  <div class="co-list" id="coList"></div>
-  <div class="bar" style="margin-top:20px">
-    <button class="btn ghost" id="copyPromptBtn" onclick="copyCompanyPrompt(this)">Скопировать промпт для поиска</button>
-  </div>
-  <p style="font-size:13px;color:var(--ink-soft);max-width:60ch">
-    Вставь в чат проекта. Результат — обратно сюда: «Входящие» → источник «Веб-поиск» → «Импортировать».
+  <p style="font-size:13px;color:var(--ink-soft);max-width:62ch;margin-bottom:26px">
+    Companies land here on import, from the <code>sponsor</code> field in the JSON.
+    Drag a card from one box to the other, or use the arrow on it.
   </p>
+
 </section>
 
 <div class="foot" id="foot"></div>
 </main>
 
 <script>
-/* Ловушка на любые необработанные ошибки — показывает файл и строку. */
+/* Trap for any unhandled error — shows the file and line. */
 (function(){
+  var seen = Object.create(null);
+  // The artifact sandbox loads its own scripts (/_runtime/…). Their errors have nothing
+  // to do with this file, and showing them is pointless: every new line in the overlay
+  // mutates the DOM and triggers another one just like it.
+  function ours(file){
+    if(!file) return true;
+    return file.indexOf("/_runtime/") === -1 && file.indexOf("/_transforms") === -1;
+  }
   function show(what, where){
+    var key = what + "|" + where;
+    if(seen[key]) return;
+    seen[key] = 1;
     var box = document.getElementById("crashBox");
     if(!box){
       box = document.createElement("div");
@@ -473,20 +628,21 @@ label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px}
     box.appendChild(document.createTextNode(what + "\n  " + where + "\n"));
   }
   window.addEventListener("error", function(e){
-    show(e.message, (e.filename || "?") + " : строка " + e.lineno + ", символ " + e.colno);
+    if(!ours(e.filename)) return;
+    show(e.message, (e.filename || "?") + " : line " + e.lineno + ", col " + e.colno);
   });
   window.addEventListener("unhandledrejection", function(e){
     var r = e.reason || {};
-    show("Promise: " + (r.message || r), (r.stack || "стека нет").split("\n").slice(0,3).join("\n  "));
+    show("Promise: " + (r.message || r), (r.stack || "no stack").split("\n").slice(0,3).join("\n  "));
   });
 })();
 </script>
 <script>
 /* ============================================================
-   Vacancy Hub — единый файл, без сборки.
-   Оценка вакансий происходит в чате проекта, по его инструкции.
-   Это приложение только хранит результат: дедуп, статусы, заметки.
-   Хранилище: window.storage (артефакт) → localStorage (хостинг).
+   Vacancy Hub — one file, no build step.
+   Roles are scored in the project chat, by its instruction.
+   This app only stores the result: dedup, statuses, notes.
+   Storage: window.storage (artifact) → localStorage (hosting).
    ============================================================ */
 
 const KEY = "vhub:state";
@@ -503,43 +659,46 @@ const SEED_COMPANIES = [
 ];
 
 const DEFAULT_PROFILE = {
-  name: "Профиль",
+  name: "Anastasiia",
   roles: "Junior Data Scientist, Data Analyst, Machine Learning Engineer, Quantitative Analyst",
-  location: "Лондон; гибрид или офис; удалённо по UK тоже подходит",
-  intake: "Graduate intake 2027 — основная цель; открыта к позициям со стартом в 2026",
-  skills: "Python, PySpark, SQL, R, PyTorch, LaTeX, GCP, BigQuery, pandas, scikit-learn, статистика, панельные регрессии, эконометрика",
-  education: "Заполни своё образование в разделе «Профиль»",
-  avoid: "Senior и Lead позиции, роли с 3+ годами обязательного опыта, неоплачиваемые стажировки, вакансии вне UK",
+  location: "London; hybrid or on-site; remote across the UK also works",
+  intake: "Graduate intake 2027 is the main target; open to roles starting in 2026",
+  skills: "Python, PySpark, SQL, R, PyTorch, LaTeX, GCP, BigQuery, pandas, scikit-learn, statistics, panel regressions, econometrics",
+  education: "MSc Data Science, LSE (2025–2026); BSc Data Science and Business Analytics, HSE Moscow",
+  avoid: "Senior and Lead roles, 3+ years of required experience, unpaid internships, roles outside the target regions",
+  platforms: "LinkedIn, Indeed, Otta, Welcome to the Jungle, Glassdoor, company sites, Telegram channels, email job alerts",
+  tracks: "Data (DS, DA, MLE, Quant), Product (PM, PO, associate and graduate), RA / academic assistant, Gig — remote side work",
   backend: ""
 };
 
 const DEFAULT_LINKS = [
-  {label: "Google Диск", url: "https://drive.google.com/drive/u/0/folders/1K0brOpMTWUeRZkpCcTjyL1qd4iMVefks"},
-  {label: "Google-таблица (статусы)", url: ""},
-  {label: "Apps Script (сбор писем)",
+  {label: "Google Drive", url: "https://drive.google.com/drive/u/0/folders/1K0brOpMTWUeRZkpCcTjyL1qd4iMVefks"},
+  {label: "Google Sheet (statuses)", url: ""},
+  {label: "Apps Script (email collection)",
    url: "https://script.google.com/u/1/home/projects/1RZ-IxuRWUVFrueXVPmFUN4wkOn1JqjvUdKVKF4lj1vA6LAScNiaQxwLq/edit"}
 ];
 
 const STATUS_LABELS = {
-  new: "добавлена", saved: "сохранено", applying: "подаюсь", applied: "подана",
-  interview: "интервью", rejected: "отказ", closed: "закрыта"
+  new: "added", saved: "saved", applying: "applying", applied: "applied",
+  test: "test / OA", interview: "interview", rejected: "rejected", closed: "closed"
 };
+const TRACK_STATUSES = ["saved","applying","applied","test","interview","rejected","closed"];
 function capFirst(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
 
 let S = {
   profile: {...DEFAULT_PROFILE},
   companies: [...SEED_COMPANIES],
   links: DEFAULT_LINKS.map(l => ({...l})),
+  sponsorLicensed: [],
+  sponsorUnlicensed: [],
   jobs: []
 };
 
-// Состояние экрана — не персистится, сбрасывается при перезагрузке.
-let importSource = "mail";
+// Screen state — not persisted, resets on reload.
 let expanded = new Set();
 let selected = new Set();
-let shortStatusFilter = ""; // "" — все статусы
-let inboxConfFilter = ""; // "" — вся уверенность
-let shortConfFilter = "";
+let shortStatusFilter = ""; // "" — all statuses
+let dragged = null;
 
 /* ---------------- storage ---------------- */
 let syncState = "local";
@@ -561,7 +720,7 @@ async function localSet(payload){
 
 async function load(){
   let local = null;
-  try{ local = await localGet(); }catch(e){ /* первый запуск */ }
+  try{ local = await localGet(); }catch(e){ /* first run */ }
   if(local) S = {...S, ...local};
 
   if(base()){
@@ -571,21 +730,41 @@ async function load(){
         const remote = await r.json();
         if(remote && remote.saved && (!local || !local.saved || remote.saved >= local.saved)){
           S = {...S, ...remote};
-          syncState = "с сервера";
+          syncState = "from server";
         } else {
-          syncState = "локальная копия свежее";
+          syncState = "local copy is newer";
         }
-      } else { syncState = "сервер вернул " + r.status; }
-    }catch(e){ syncState = "сервер недоступен"; }
+      } else { syncState = "server returned " + r.status; }
+    }catch(e){ syncState = "server unreachable"; }
   }
 
   S.profile = {...DEFAULT_PROFILE, ...(S.profile||{})};
+
+  // Интерфейс переведён на английский. Если в сохранённом состоянии лежат ровно те
+  // русские значения, что стояли по умолчанию раньше, меняем их на новые английские;
+  // всё, что правила вручную, остаётся как есть.
+  const RU_DEFAULTS = {
+    name: "\u041f\u0440\u043e\u0444\u0438\u043b\u044c",
+    roles: "Junior Data Scientist, Data Analyst, Machine Learning Engineer, Quantitative Analyst"
+  };
+  if(S.profile.name === RU_DEFAULTS.name) S.profile.name = DEFAULT_PROFILE.name;
+  ["location","intake","skills","education","avoid","platforms","tracks"].forEach(k => {
+    if(/[\u0400-\u04FF]/.test(S.profile[k] || "")) S.profile[k] = DEFAULT_PROFILE[k];
+  });
+  const RU_LINKS = {
+    "Google \u0414\u0438\u0441\u043a": "Google Drive",
+    "Google-\u0442\u0430\u0431\u043b\u0438\u0446\u0430 (\u0441\u0442\u0430\u0442\u0443\u0441\u044b)": "Google Sheet (statuses)",
+    "Apps Script (\u0441\u0431\u043e\u0440 \u043f\u0438\u0441\u0435\u043c)": "Apps Script (email collection)"
+  };
+  S.links.forEach(l => { if(RU_LINKS[l.label]) l.label = RU_LINKS[l.label]; });
   if(!Array.isArray(S.companies) || !S.companies.length) S.companies = [...SEED_COMPANIES];
   if(!Array.isArray(S.links)) S.links = DEFAULT_LINKS.map(l => ({...l}));
+  if(!Array.isArray(S.sponsorLicensed)) S.sponsorLicensed = [];
+  if(!Array.isArray(S.sponsorUnlicensed)) S.sponsorUnlicensed = [];
   if(!Array.isArray(S.jobs)) S.jobs = [];
 
-  // Переход со старой схемы (три отдельные даты) на единый лог статусов —
-  // ничего из уже записанного не теряется.
+  // Migration from the old schema (three separate dates) to a single status log —
+  // nothing already recorded is lost.
   S.jobs.forEach(j => {
     if(Array.isArray(j.statusLog)) return;
     const log = [{status: "new", at: j.found || Date.now()}];
@@ -602,7 +781,7 @@ async function save(){
   S.saved = Date.now();
   const payload = JSON.stringify(S);
   try{ await localSet(payload); }
-  catch(e){ console.error("Локально не сохранилось:", e); }
+  catch(e){ console.error("Local save failed:", e); }
 
   if(!base()) return;
   clearTimeout(pushTimer);
@@ -611,8 +790,8 @@ async function save(){
       const r = await fetch(base() + "/state", {
         method:"PUT", headers:{"Content-Type":"application/json"}, body: payload
       });
-      syncState = r.ok ? "синхронизировано " + new Date().toLocaleTimeString("ru-RU") : "не записалось, " + r.status;
-    }catch(e){ syncState = "запись не прошла"; }
+      syncState = r.ok ? "synced " + new Date().toLocaleTimeString("en-GB") : "write failed, " + r.status;
+    }catch(e){ syncState = "write failed"; }
     render();
   }, 1500);
 }
@@ -621,15 +800,15 @@ async function save(){
 async function copyText(text, btn, doneLabel){
   const original = btn ? btn.textContent : null;
   try{
-    if(!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("нет clipboard API");
+    if(!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("no clipboard API");
     await navigator.clipboard.writeText(text);
     if(btn){
-      btn.textContent = doneLabel || "Скопировано ✓";
+      btn.textContent = doneLabel || "Copied ✓";
       setTimeout(() => { btn.textContent = original; }, 1600);
     }
   }catch(e){
-    // Автоматическое копирование здесь часто блокируется песочницей артефакта.
-    // Запасной путь — окно с уже выделенным текстом, Cmd+C сработает всегда.
+    // Automatic copying is often blocked by the artifact sandbox.
+    // Fallback — a window with the text already selected, Cmd+C always works.
     showCopyFallback(text);
     if(btn) btn.textContent = original;
   }
@@ -649,7 +828,7 @@ function showCopyFallback(text){
 
   const label = document.createElement("p");
   label.style.cssText = "font-size:13.5px;color:var(--ink-soft)";
-  label.textContent = "Браузер не разрешил скопировать напрямую. Текст ниже уже выделен — нажми Cmd+C (или Ctrl+C), потом закрой это окно.";
+  label.textContent = "The browser blocked copying directly. The text below is already selected — press Cmd+C (or Ctrl+C), then close this window.";
 
   const ta = document.createElement("textarea");
   ta.value = text;
@@ -657,7 +836,7 @@ function showCopyFallback(text){
   ta.style.cssText = "flex:1;min-height:260px;font-family:ui-monospace,monospace;font-size:12.5px";
 
   const close = document.createElement("button");
-  close.className = "btn"; close.textContent = "Закрыть";
+  close.className = "btn"; close.textContent = "Close";
   close.style.alignSelf = "flex-start";
   close.onclick = () => overlay.remove();
 
@@ -680,7 +859,7 @@ function parseJSON(text){
 function normKey(j){
   return ((j.company||"") + "|" + (j.title||"")).toLowerCase().replace(/[^a-zа-я0-9|]/gi,"");
 }
-function addJobs(list, source){
+function addJobs(list){
   let added = 0, updated = 0;
   const byKey = new Map(S.jobs.map(j => [normKey(j), j]));
   for(const raw of list){
@@ -695,7 +874,9 @@ function addJobs(list, source){
       confidence: conf,
       why: raw.why || "",
       have: Array.isArray(raw.have) ? raw.have.slice(0,3) : [],
-      gaps: Array.isArray(raw.gaps) ? raw.gaps.slice(0,3) : []
+      gaps: Array.isArray(raw.gaps) ? raw.gaps.slice(0,3) : [],
+      track: ["now","home"].includes(raw.track) ? raw.track : "",
+      sponsor: ["licensed","not_listed","undisclosed","unchecked"].includes(raw.sponsor) ? raw.sponsor : ""
     };
     const platform = raw.platform ? String(raw.platform).slice(0,60) : "";
     const j = {
@@ -703,29 +884,30 @@ function addJobs(list, source){
       title: String(raw.title).slice(0,140),
       company: String(raw.company).slice(0,80),
       platform,
-      note: "", statusLog: [{status: "new", at: Date.now()}],
+      note: "", desc: "", statusLog: [{status: "new", at: Date.now()}],
       ...fields,
-      source, status: "new", found: Date.now()
+      status: "new", found: Date.now()
     };
+    noteSponsor(j.company, fields.sponsor);
     const k = normKey(j);
     const existing = byKey.get(k);
 
     if(existing){
       let touched = false;
-      // Платформа «липкая»: пустой ответ на переоценку не должен стирать то,
-      // что уже было определено раньше.
+      // Platform is sticky: an empty answer on re-scoring must not erase
+      // what was already determined earlier.
       if(platform && platform !== existing.platform){
         existing.platform = platform;
         touched = true;
       }
-      // Явный сигнал «вакансия закрыта» из массовой переоценки — можно ставить всегда.
+      // An explicit "role closed" signal from bulk re-scoring can always be applied.
       if(raw.status === "closed" && existing.status !== "closed"){
         existing.status = "closed";
         touched = true;
       }
-      // Обновляем оценку при том же уровне уверенности или выше — так работает
-      // и апгрейд первого прохода вторым, и обычное обновление после переоценки.
-      // Никогда не откатываем high обратно к low или medium.
+      // Update the score at the same confidence level or higher — this covers both
+      // upgrading a first pass with a second one and a routine re-scoring update.
+      // Never roll high back down to low or medium.
       const rank = {low:0, medium:1, high:2};
       if(rank[conf] >= rank[existing.confidence || "low"]){
         Object.assign(existing, fields);
@@ -746,8 +928,22 @@ function scoreColor(f){
 }
 function matches(j, q){
   if(!q) return true;
-  const s = (j.title + " " + j.company).toLowerCase();
-  return s.includes(q.trim().toLowerCase());
+  return String(j.title || "").toLowerCase().includes(q.trim().toLowerCase());
+}
+function matchesCompany(j, q){
+  if(!q || !q.trim()) return true;
+  return String(j.company || "").toLowerCase().includes(q.trim().toLowerCase());
+}
+/* Licensed and unlicensed companies — the two lists on the Companies tab.
+   Sorted by the sponsor field from the JSON, but only if the company is not yet
+   in either list: a manual move outranks the automatic one. */
+function noteSponsor(company, sponsor){
+  const name = String(company || "").trim();
+  if(!name || !sponsor) return;
+  const has = (arr) => arr.some(c => c.toLowerCase() === name.toLowerCase());
+  if(has(S.sponsorLicensed) || has(S.sponsorUnlicensed)) return;
+  if(sponsor === "licensed") S.sponsorLicensed.push(name);
+  else if(sponsor === "not_listed") S.sponsorUnlicensed.push(name);
 }
 function matchesSkills(j, raw){
   const terms = (raw || "").split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
@@ -759,26 +955,23 @@ function findLink(keyword){
   const l = S.links.find(x => x.url && x.label.toLowerCase().includes(keyword));
   return l ? l.url : null;
 }
-function driveUrl(){ return findLink("диск") || findLink("drive"); }
+function driveUrl(){ return findLink("drive") || findLink("\u0434\u0438\u0441\u043a"); }
 function fillFieldOptions(selectId, list, field, allLabel){
   const el = document.getElementById(selectId);
   if(!el) return "";
   const current = el.value;
-  const values = [...new Set(list.map(j => j[field]).filter(Boolean))].sort((a,b) => a.localeCompare(b, "ru"));
+  const values = [...new Set(list.map(j => j[field]).filter(Boolean))].sort((a,b) => a.localeCompare(b, "en"));
   el.innerHTML = '<option value="">' + allLabel + '</option>' +
     values.map(v => '<option' + (v === current ? ' selected' : '') + '>' + esc(v) + '</option>').join("");
-  // Если выбранное значение пропало из списка (все такие вакансии скрыты) — сбрасываем на «Все».
+  // If the selected value disappeared from the list (all such roles hidden) — reset to "All".
   return values.includes(current) ? current : "";
-}
-function fillCompanyOptions(selectId, list){
-  return fillFieldOptions(selectId, list, "company", "Все компании");
 }
 
 /* ---------------- rendering ---------------- */
 function rescorePrompt(j){
-  return "Второй проход:\n" + j.title + " — " + j.company +
-    (j.url ? "\n" + j.url : "") +
-    "\n\n(вставь сюда текст со страницы вакансии, и я пересчитаю оценку по правилам проекта)";
+  return "Second pass:\n" + j.title + " — " + j.company +
+    (j.url ? "\n" + j.url : "") + "\n\n" +
+    (j.desc ? j.desc : "(paste the text from the job page here and re-score it by the project rules)");
 }
 
 function jobRow(j, ctx){
@@ -799,7 +992,7 @@ function jobRow(j, ctx){
     const box = document.createElement("input");
     box.type = "checkbox";
     box.checked = selected.has(j.id);
-    box.setAttribute("aria-label", "Выбрать " + j.title);
+    box.setAttribute("aria-label", "Select " + j.title);
     box.onclick = (e) => {
       e.stopPropagation();
       selected.has(j.id) ? selected.delete(j.id) : selected.add(j.id);
@@ -811,7 +1004,7 @@ function jobRow(j, ctx){
   const sc = document.createElement("div");
   sc.className = "score mono" + ((j.confidence || "low") === "low" ? " provisional" : "");
   sc.style.color = scoreColor(j.fit);
-  sc.innerHTML = j.fit + "<small>" + ((j.confidence || "low") === "high" ? "fit" : "предв.") + "</small>";
+  sc.innerHTML = j.fit + "<small>" + ((j.confidence || "low") === "high" ? "fit" : "prelim.") + "</small>";
 
   const mid = document.createElement("div");
   const t = document.createElement("div");
@@ -827,19 +1020,22 @@ function jobRow(j, ctx){
   if(j.location) bits.push(esc(j.location));
   if(j.salary) bits.push(esc(j.salary));
   const conf = j.confidence || "low";
-  const confLabel = {low:"только из письма", medium:"частично", high:"по описанию"}[conf];
+  const confLabel = {low:"from alert only", medium:"partial", high:"from description"}[conf];
+  const trackLabel = {now: "now — bridge", home: "home — career goal"}[j.track];
+  const sponsorLabel = {licensed: "sponsor licence held", not_listed: "not in sponsor register",
+                        undisclosed: "employer undisclosed", unchecked: "register not checked"}[j.sponsor];
   meta.innerHTML = bits.join(" — ") +
-    (j.deadline ? ' <span class="pill urgent">до ' + esc(j.deadline) + '</span>' : '') +
+    (j.deadline ? ' <span class="pill urgent">by ' + esc(j.deadline) + '</span>' : '') +
     ' <span class="pill conf-' + conf + '">' + confLabel + '</span>' +
+    (trackLabel ? ' <span class="pill">' + trackLabel + '</span>' : '') +
+    (sponsorLabel ? ' <span class="pill">' + sponsorLabel + '</span>' : '') +
     (j.platform ? ' <span class="pill">' + esc(j.platform) + '</span>' : '') +
-    ' <span class="pill src">' +
-      (j.source === "mail" ? "из почты" : j.source === "telegram" ? "из Telegram" : "найдено в сети") +
-    '</span>';
+    (j.desc ? ' <span class="pill conf-high">description added</span>' : '');
   mid.appendChild(meta);
 
   const chev = document.createElement("button");
   chev.className = "chevron"; chev.textContent = "▸";
-  chev.setAttribute("aria-label", "Показать подробности");
+  chev.setAttribute("aria-label", "Show details");
 
   head.append(chk, sc, mid, chev);
 
@@ -861,7 +1057,7 @@ function jobRow(j, ctx){
   if(ctx === "short"){
     const row = document.createElement("div");
     row.className = "status-row";
-    ["saved","applying","applied","interview","rejected","closed"].forEach(st => {
+    TRACK_STATUSES.forEach(st => {
       const b = document.createElement("button");
       b.className = "stat-btn";
       b.textContent = STATUS_LABELS[st];
@@ -878,7 +1074,7 @@ function jobRow(j, ctx){
         const line = document.createElement("div");
         line.className = "applied-date";
         line.textContent = capFirst(STATUS_LABELS[entry.status] || entry.status) +
-          ": " + new Date(entry.at).toLocaleDateString("ru-RU");
+          ": " + new Date(entry.at).toLocaleDateString("en-GB");
         log.appendChild(line);
       });
       body.appendChild(log);
@@ -887,28 +1083,41 @@ function jobRow(j, ctx){
     const noteWrap = document.createElement("div");
     noteWrap.className = "note-field";
     const noteLabel = document.createElement("label");
-    noteLabel.textContent = "Заметка";
+    noteLabel.textContent = "Note";
     const noteArea = document.createElement("textarea");
     noteArea.value = j.note || "";
-    noteArea.placeholder = "Что написала, кто контакт, следующий шаг…";
+    noteArea.placeholder = "What you wrote, who the contact is, next step…";
     noteArea.onblur = () => saveNote(j.id, noteArea.value);
     noteWrap.append(noteLabel, noteArea);
     body.appendChild(noteWrap);
   }
 
+  // Field for the text from the job page — picked up by "Copy for re-scoring".
+  const descWrap = document.createElement("div");
+  descWrap.className = "note-field";
+  const descLabel = document.createElement("label");
+  descLabel.textContent = "Job text from the page — goes into the second pass";
+  const descArea = document.createElement("textarea");
+  descArea.value = j.desc || "";
+  descArea.placeholder = "Paste the description from the site: requirements, stack, level, dates…";
+  descArea.style.minHeight = "92px";
+  descArea.onblur = () => saveDesc(j.id, descArea.value);
+  descWrap.append(descLabel, descArea);
+  body.appendChild(descWrap);
+
   const acts = document.createElement("div");
   acts.className = "job-acts";
   if(ctx !== "short"){
-    acts.appendChild(mkBtn("В шортлист", () => setStatus(j.id, "saved")));
-    acts.appendChild(mkBtn("Скрыть", () => setStatus(j.id, "hidden"), true));
+    acts.appendChild(mkBtn("Save", () => setStatus(j.id, "saved")));
+    acts.appendChild(mkBtn("Delete", () => setStatus(j.id, "hidden"), true));
   } else {
-    acts.appendChild(mkBtn("Убрать", () => setStatus(j.id, "hidden"), true));
+    acts.appendChild(mkBtn("Remove", () => setStatus(j.id, "hidden"), true));
     const d = driveUrl();
-    if(d) acts.appendChild(mkBtn("Открыть Диск", () => window.open(d, "_blank", "noopener"), true));
+    if(d) acts.appendChild(mkBtn("Open Drive", () => window.open(d, "_blank", "noopener"), true));
   }
   if((j.confidence || "low") !== "high"){
-    acts.appendChild(mkBtn("Скопировать для переоценки",
-      (e) => copyText(rescorePrompt(j), e.target, "Скопировано ✓"), true));
+    acts.appendChild(mkBtn("Copy for re-scoring",
+      (e) => copyText(rescorePrompt(j), e.target, "Copied ✓"), true));
   }
   body.appendChild(acts);
 
@@ -939,6 +1148,12 @@ async function setStatus(id, st){
     if(d) window.open(d, "_blank", "noopener");
   }
   selected.delete(id);
+  await save(); render();
+}
+async function saveDesc(id, text){
+  const j = S.jobs.find(x => x.id === id);
+  if(!j || j.desc === text) return;
+  j.desc = text;
   await save(); render();
 }
 async function saveNote(id, text){
@@ -974,8 +1189,8 @@ function fill(id, list, ctx){
     const e = document.createElement("div");
     e.className = "empty";
     e.innerHTML = ctx === "short"
-      ? "<b>Шортлист пуст</b>Нажми «В шортлист» на любой вакансии, и она появится здесь со статусами."
-      : "<b>Здесь пусто</b>Вставь JSON, который вернул чат проекта, и нажми «Импортировать».";
+      ? "<b>Tracking is empty</b>Hit Save on any role and it shows up here with its statuses."
+      : "<b>Nothing here yet</b>Paste the JSON your project chat returned and hit Import.";
     box.appendChild(e);
     return;
   }
@@ -985,82 +1200,65 @@ function fill(id, list, ctx){
 function render(){
   const live = S.jobs.filter(j => j.status !== "hidden");
   const queue = live.filter(j => j.status === "new");
-  const short = live.filter(j => ["saved","applying","applied","interview","rejected","closed"].includes(j.status));
-  const strong = queue.filter(j => j.fit >= 70).length;
-
-  document.getElementById("heroCount").textContent = queue.length;
-  document.getElementById("heroNote").innerHTML = queue.length
-    ? "вакансий ждут разбора, из них <b>" + strong + "</b> с совпадением от 70."
-    : "Пока пусто. Вставь JSON, который выдал чат проекта, во «Входящих».";
+  const short = live.filter(j => TRACK_STATUSES.includes(j.status));
 
   document.getElementById("pInbox").textContent = queue.length;
   document.getElementById("pShort").textContent = short.length;
-  document.getElementById("pCos").textContent = S.companies.length;
-  document.getElementById("pSkillCount").textContent =
-    S.profile.skills.split(",").map(s => s.trim()).filter(Boolean).length;
-  document.getElementById("brandWho").textContent = S.profile.name + ", " + (S.profile.location.split(";")[0] || "");
+  document.getElementById("brandWho").textContent =
+    (S.profile.name || "") + ", " + ((S.profile.location || "").split(";")[0] || "");
 
+  // The three Inbox filters work as AND: title AND company AND skills.
   const q = (document.getElementById("inboxSearch")?.value || "");
+  const coQ = (document.getElementById("inboxCompany")?.value || "");
   const skillsQ = (document.getElementById("inboxSkills")?.value || "");
-  const minFit = parseInt(document.getElementById("inboxMinFit")?.value, 10);
-  const byMin = Number.isFinite(minFit) ? queue.filter(j => j.fit >= minFit) : queue;
-  const inboxCo = fillCompanyOptions("inboxCompany", byMin);
-  const inboxPl = fillFieldOptions("inboxPlatform", byMin, "platform", "Все платформы");
-  renderConfSeg("inboxConfSeg", inboxConfFilter, "setInboxConfFilter");
-  const shown = byMin.filter(j => matches(j, q) && matchesSkills(j, skillsQ) &&
-    (!inboxCo || j.company === inboxCo) && (!inboxPl || j.platform === inboxPl) &&
-    (!inboxConfFilter || j.confidence === inboxConfFilter));
-  document.getElementById("inboxCount").textContent = shown.length + " из " + queue.length + " показано";
+  const shown = queue.filter(j =>
+    matches(j, q) && matchesCompany(j, coQ) && matchesSkills(j, skillsQ));
+  document.getElementById("inboxCount").textContent = shown.length + " of " + queue.length + " shown";
 
   const bulkBox = document.getElementById("inboxBulk");
   bulkBox.innerHTML = "";
   if(selected.size){
     const bar = document.createElement("div");
     bar.className = "bulkbar";
-    bar.innerHTML = "<b>Выбрано: " + selected.size + "</b>";
-    bar.appendChild(mkBtn("В шортлист", () => bulkSetStatus("saved")));
-    bar.appendChild(mkBtn("Скрыть", () => bulkSetStatus("hidden"), true));
-    bar.appendChild(mkBtn("Снять выделение", () => { selected.clear(); render(); }, true));
+    bar.innerHTML = "<b>Selected: " + selected.size + "</b>";
+    bar.appendChild(mkBtn("Save", () => bulkSetStatus("saved")));
+    bar.appendChild(mkBtn("Delete", () => bulkSetStatus("hidden"), true));
+    bar.appendChild(mkBtn("Clear selection", () => { selected.clear(); render(); }, true));
     bulkBox.appendChild(bar);
   }
 
   renderStatusSeg();
-  renderConfSeg("shortConfSeg", shortConfFilter, "setShortConfFilter");
   const sq = (document.getElementById("shortSearch")?.value || "");
-  const shortMinFit = parseInt(document.getElementById("shortMinFit")?.value, 10);
+  const scoQ = (document.getElementById("shortCompany")?.value || "");
   const byStatus = shortStatusFilter ? short.filter(j => j.status === shortStatusFilter) : short;
-  const byShortMin = Number.isFinite(shortMinFit) ? byStatus.filter(j => j.fit >= shortMinFit) : byStatus;
-  const shortCo = fillCompanyOptions("shortCompany", byShortMin);
-  const shortPl = fillFieldOptions("shortPlatform", byShortMin, "platform", "Все платформы");
-  const shortShown = byShortMin.filter(j => matches(j, sq) &&
-    (!shortCo || j.company === shortCo) && (!shortPl || j.platform === shortPl) &&
-    (!shortConfFilter || j.confidence === shortConfFilter));
+  const shortPl = fillFieldOptions("shortPlatform", byStatus, "platform", "All platforms");
+  const shortShown = byStatus.filter(j => matches(j, sq) && matchesCompany(j, scoQ) &&
+    (!shortPl || j.platform === shortPl));
   fill("inboxList", shown.slice().sort((a,b) => b.fit - a.fit), "inbox");
   fill("shortList", shortShown.sort((a,b) => b.fit - a.fit), "short");
 
-  document.getElementById("coList").innerHTML = S.companies.map((c,i) =>
-    '<span class="co">' + esc(c) + '<button onclick="delCo(' + i + ')" aria-label="Убрать ' + esc(c) + '">×</button></span>'
-  ).join("");
-
   renderLinksEditor();
   renderHubLinks();
+  renderFacts();
+  renderSponsorBlocks();
+  renderChart();
 
   document.getElementById("foot").textContent = base()
-    ? "Синхронизация с бэкендом: " + syncState + ". Данные доступны на всех устройствах, где вписан тот же адрес."
-    : "Данные пока только в этом браузере. Впиши адрес бэкенда в профиле, чтобы видеть их с телефона и айпада.";
+    ? "Backend sync: " + syncState + ". The data is available on every device with the same address entered."
+    : "The data lives in this browser only. Add a backend address in Profile to see it from your phone and iPad.";
 }
 
 /* ---------------- nav ---------------- */
-const VIEWS = [["hub","Главная"],["inbox","Входящие"],["shortlist","Шортлист"],["profile","Профиль"],["companies","Компании"]];
+const VIEWS = [["hub","Home"],["inbox","Inbox"],["shortlist","Tracking"],["profile","Profile"],["companies","Companies"]];
 function go(v){
   VIEWS.forEach(([id]) => document.getElementById("v-" + id).classList.toggle("hidden", id !== v));
-  document.querySelectorAll("#crumbs .crumb").forEach(b =>
+  document.querySelectorAll("#rail .petal").forEach(b =>
     b.setAttribute("aria-current", b.dataset.v === v ? "page" : "false"));
   try{ window.scrollTo(0, 0); }catch(e){}
 }
 function buildNav(){
-  document.getElementById("crumbs").innerHTML = VIEWS.map(([id,label]) =>
-    '<button class="crumb" data-v="' + id + '" onclick="go(\'' + id + '\')">' + label + '</button>').join("");
+  document.getElementById("rail").innerHTML = VIEWS.map(([id,label]) =>
+    '<button class="petal" data-v="' + id + '" onclick="go(\'' + id + '\')">' + label + '</button>').join("");
 }
 
 /* ---------------- inbox ---------------- */
@@ -1073,88 +1271,112 @@ function logTo(id, msg){
   el.textContent += msg + "\n";
   el.scrollTop = el.scrollHeight;
 }
-function setImportSource(src){
-  importSource = src;
-  document.getElementById("srcMail").setAttribute("aria-pressed", src === "mail" ? "true" : "false");
-  document.getElementById("srcTg").setAttribute("aria-pressed", src === "telegram" ? "true" : "false");
-  document.getElementById("srcWeb").setAttribute("aria-pressed", src === "web" ? "true" : "false");
-}
 function setShortStatusFilter(st){ shortStatusFilter = st; render(); }
 function renderStatusSeg(){
   const seg = document.getElementById("shortStatusSeg");
   if(!seg) return;
-  const opts = [["","Все"],["saved","Сохранено"],["applying","Подаюсь"],["applied","Подана"],["interview","Интервью"],["rejected","Отказ"],["closed","Закрыта"]];
+  const opts = [["","All"],["saved","Saved"],["applying","Applying"],["applied","Applied"],["test","Test / OA"],["interview","Interview"],["rejected","Rejected"],["closed","Closed"]];
   seg.innerHTML = opts.map(([v,label]) =>
     '<button aria-pressed="' + (shortStatusFilter === v ? "true" : "false") +
     '" onclick="setShortStatusFilter(\'' + v + '\')">' + label + '</button>').join("");
-}
-function setInboxConfFilter(v){ inboxConfFilter = v; render(); }
-function setShortConfFilter(v){ shortConfFilter = v; render(); }
-function renderConfSeg(containerId, current, setterName){
-  const seg = document.getElementById(containerId);
-  if(!seg) return;
-  const opts = [["","Все"],["low","Только из письма"],["medium","Частично"],["high","По описанию"]];
-  seg.innerHTML = opts.map(([v,label]) =>
-    '<button aria-pressed="' + (current === v ? "true" : "false") +
-    '" onclick="' + setterName + '(\'' + v + '\')">' + label + '</button>').join("");
 }
 
 async function importJSON(){
   setErr("inboxErr","");
   const raw = document.getElementById("pasteBox").value.trim();
-  if(!raw){ setErr("inboxErr","Поле пустое. Вставь JSON-массив, который выдал чат."); return; }
+  if(!raw){ setErr("inboxErr","The field is empty. Paste the JSON array the chat returned."); return; }
 
   let data = null;
   try{ data = JSON.parse(raw.replace(/```json/gi,"").replace(/```/g,"").trim()); }
   catch(e){ data = parseJSON(raw); }
 
-  // Полная резервная копия — восстанавливаем состояние целиком.
+  // A full backup — restore the whole state.
   if(data && !Array.isArray(data) && Array.isArray(data.jobs)){
     S = {...S, ...data};
     await save(); loadProfileForm(); render();
-    logTo("inboxLog", "Копия восстановлена: вакансий " + S.jobs.length + ".");
+    logTo("inboxLog", "Backup restored: " + S.jobs.length + " roles.");
     document.getElementById("pasteBox").value = "";
     return;
   }
 
   const list = Array.isArray(data) ? data : [];
   if(!list.length){
-    setErr("inboxErr","Это не похоже ни на массив вакансий, ни на резервную копию.");
+    setErr("inboxErr","This looks like neither an array of roles nor a backup file.");
     return;
   }
-  const r = addJobs(list, importSource);
+  const r = addJobs(list);
   await save(); render();
-  logTo("inboxLog", "Импорт: получено " + list.length + ", новых " + r.added +
-        ", переоценено " + r.updated +
-        ", дублей " + (list.length - r.added - r.updated) + ".");
+  logTo("inboxLog", "Import: received " + list.length + ", new " + r.added +
+        ", re-scored " + r.updated +
+        ", duplicates " + (list.length - r.added - r.updated) + ".");
   document.getElementById("pasteBox").value = "";
 }
 function clearPaste(){ document.getElementById("pasteBox").value = ""; setErr("inboxErr",""); }
 function copyAllForRescore(btn){
   const active = S.jobs.filter(j => j.status !== "hidden" && j.status !== "closed" && j.status !== "rejected");
   if(!active.length){
-    btn.textContent = "Нечего копировать";
-    setTimeout(() => { btn.textContent = "Скопировать список для переоценки"; }, 1600);
+    btn.textContent = "Nothing to copy";
+    setTimeout(() => { btn.textContent = "Copy for re-scoring"; }, 1600);
     return;
   }
-  const payload = active.map(j => ({
-    title: j.title, company: j.company, location: j.location, url: j.url,
-    deadline: j.deadline, salary: j.salary, status: j.status,
-    fit: j.fit, confidence: j.confidence, why: j.why, have: j.have, gaps: j.gaps
-  }));
+  const payload = active.map(j => {
+    const o = {
+      title: j.title, company: j.company, location: j.location, url: j.url,
+      deadline: j.deadline, salary: j.salary, status: j.status,
+      track: j.track || "", sponsor: j.sponsor || "",
+      fit: j.fit, confidence: j.confidence, why: j.why, have: j.have, gaps: j.gaps
+    };
+    if(j.desc && j.desc.trim()) o.description = j.desc.trim();
+    return o;
+  });
+  const withDesc = payload.filter(o => o.description).length;
   const text =
-    "Вот вакансии, которые я сейчас отслеживаю (поле status — моя пометка, не трогай его, " +
-    "кроме случая ниже). Пересчитай fit, confidence, why, have и gaps по правилам проекта — " +
-    "могло измениться то, что известно, или пройти дедлайн. Если по вакансии видно, что набор " +
-    "закрыт, верни для неё \"status\": \"closed\" вместо остальных полей оценки. " +
-    "Верни JSON-массив в том же формате, с теми же title, company и url.\n\n" +
+    "Re-score the fit for these roles. The status field is my own marker — leave it alone, " +
+    "except in the case below. Where a description field is present, that is the text from the " +
+    "job page: score it by the second-pass rules and set confidence: \"high\". Where there is " +
+    "none, re-score it as a first pass. If a role is clearly closed, return \"status\": \"closed\" " +
+    "for it instead of the other scoring fields. Return a JSON array in the same format, with the " +
+    "same title, company and url, and with the required track and sponsor fields.\n\n" +
+    "Roles in total: " + payload.length + ", of them with a description: " + withDesc + ".\n\n" +
     JSON.stringify(payload, null, 2);
-  copyText(text, btn, "Скопировано ✓");
+  copyText(text, btn, "Copied ✓");
+}
+
+/* Dump of everything in progress as text for the chat: statuses, history, notes, descriptions. */
+function copyTracking(btn){
+  const list = S.jobs.filter(j => TRACK_STATUSES.includes(j.status));
+  if(!list.length){
+    const original = btn.textContent;
+    btn.textContent = "Nothing here yet";
+    setTimeout(() => { btn.textContent = original; }, 1600);
+    return;
+  }
+  const blocks = list.slice().sort((a,b) => b.fit - a.fit).map(j => {
+    const lines = [];
+    lines.push("— " + j.title + " — " + j.company + (j.location ? ", " + j.location : ""));
+    if(j.url) lines.push("  link: " + j.url);
+    lines.push("  status: " + (STATUS_LABELS[j.status] || j.status) +
+      "; fit " + j.fit + "; confidence " + (j.confidence || "low") +
+      (j.track ? "; track " + j.track : "") + (j.sponsor ? "; sponsor " + j.sponsor : ""));
+    if(j.deadline) lines.push("  deadline: " + j.deadline);
+    if(j.statusLog && j.statusLog.length){
+      lines.push("  history: " + j.statusLog.map(e =>
+        (STATUS_LABELS[e.status] || e.status) + " " + new Date(e.at).toLocaleDateString("en-GB")).join(" → "));
+    }
+    if(j.note && j.note.trim()) lines.push("  note: " + j.note.trim());
+    if(j.desc && j.desc.trim()) lines.push("  job description:\n" + j.desc.trim());
+    return lines.join("\n");
+  });
+  const text =
+    "These are the roles I already have in progress — treat them as known, do not suggest them " +
+    "again and do not duplicate them in the next re-scoring pass:\n\n" + blocks.join("\n\n");
+  copyText(text, btn, "Copied ✓");
 }
 
 /* ---------------- profile & companies ---------------- */
 const FIELDS = {name:"pName", roles:"pRoles", location:"pLoc", intake:"pIntake",
-                skills:"pSkills", education:"pEdu", avoid:"pAvoid", backend:"pBackend"};
+                skills:"pSkills", education:"pEdu", avoid:"pAvoid",
+                platforms:"pPlatforms", tracks:"pTracks", backend:"pBackend"};
 function $(id){ return document.getElementById(id); }
 function loadProfileForm(){
   for(const [key, id] of Object.entries(FIELDS)){
@@ -1168,11 +1390,11 @@ async function saveProfile(){
     const el = $(id);
     next[key] = el ? el.value.trim() : (S.profile[key] || "");
   }
-  if(!next.name) next.name = "Профиль";
-  S.profile = next;
+  S.profile = {...S.profile, ...next};
+  if(!S.profile.name) S.profile.name = "Profile";
   await save(); render();
   const n = document.getElementById("profSaved");
-  n.textContent = "Сохранено";
+  n.textContent = "Saved";
   setTimeout(() => n.textContent = "", 2000);
 }
 function exportBackup(){
@@ -1187,25 +1409,219 @@ function exportBackup(){
 function splitCos(v){
   return v.split(/[\n,;]+/).map(s => s.trim()).filter(Boolean);
 }
-async function addCompanies(){
-  const list = splitCos(document.getElementById("coAdd").value);
-  const have = new Set(S.companies.map(c => c.toLowerCase()));
-  list.forEach(c => { if(!have.has(c.toLowerCase())){ S.companies.push(c); have.add(c.toLowerCase()); } });
-  document.getElementById("coAdd").value = "";
+
+/* ---------------- chart ---------------- */
+let chartRange = 14; // days
+
+function setChartRange(n){ chartRange = n; render(); }
+
+function dayKey(ts){
+  const d = new Date(ts);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function chartData(){
+  const days = [];
+  const today = new Date(); today.setHours(0,0,0,0);
+  for(let i = chartRange - 1; i >= 0; i--){
+    const d = new Date(today.getTime() - i*86400000);
+    days.push({key: dayKey(d.getTime()), date: d, added: 0, tracked: 0});
+  }
+  const byKey = new Map(days.map(d => [d.key, d]));
+  // Added — by the date they appeared, hidden ones included: this is history, not the current list.
+  S.jobs.forEach(j => {
+    const a = byKey.get(dayKey(j.found || Date.now()));
+    if(a) a.added++;
+    (j.statusLog || []).forEach(e => {
+      if(e.status !== "saved") return;
+      const t = byKey.get(dayKey(e.at));
+      if(t) t.tracked++;
+    });
+  });
+  return days;
+}
+function renderChart(){
+  const box = document.getElementById("chartBox");
+  if(!box) return;
+  const seg = document.getElementById("chartRangeSeg");
+  if(seg){
+    seg.innerHTML = [[14,"14 days"],[30,"30 days"],[90,"90 days"]].map(([n,label]) =>
+      '<button aria-pressed="' + (chartRange === n ? "true" : "false") +
+      '" onclick="setChartRange(' + n + ')">' + label + '</button>').join("");
+  }
+
+  const days = chartData();
+  const max = Math.max(1, ...days.map(d => Math.max(d.added, d.tracked)));
+  if(!days.some(d => d.added || d.tracked)){
+    box.innerHTML = '<p class="chart-empty">Nothing was added in this period. ' +
+      'The chart fills itself as soon as you import roles.</p>';
+    return;
+  }
+
+  const W = 900, H = 230, padL = 34, padR = 8, padB = 30, padT = 10;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const slot = plotW / days.length;
+  const barW = Math.max(2, Math.min(14, slot / 2 - 2));
+  const y = (v) => padT + plotH - (v / max) * plotH;
+
+  // Axis: four ticks, whole numbers.
+  const ticks = [];
+  const step = Math.max(1, Math.ceil(max / 4));
+  for(let v = 0; v <= max; v += step) ticks.push(v);
+
+  let g = "";
+  ticks.forEach(v => {
+    g += '<line x1="' + padL + '" x2="' + (W - padR) + '" y1="' + y(v).toFixed(1) +
+         '" y2="' + y(v).toFixed(1) + '" stroke="var(--line)" stroke-width="1"/>' +
+         '<text x="' + (padL - 8) + '" y="' + (y(v) + 4).toFixed(1) +
+         '" text-anchor="end" font-size="11" fill="var(--ink-soft)">' + v + '</text>';
+  });
+
+  // Label every Nth date so they do not collide.
+  const everyN = Math.ceil(days.length / 10);
+  days.forEach((d, i) => {
+    const cx = padL + slot * i + slot / 2;
+    const x1 = cx - barW - 1, x2 = cx + 1;
+    if(d.added){
+      g += '<rect x="' + x1.toFixed(1) + '" y="' + y(d.added).toFixed(1) + '" width="' + barW.toFixed(1) +
+           '" height="' + (padT + plotH - y(d.added)).toFixed(1) + '" rx="2" fill="var(--teal-deep)">' +
+           '<title>' + d.key + ": added " + d.added + '</title></rect>';
+    }
+    if(d.tracked){
+      g += '<rect x="' + x2.toFixed(1) + '" y="' + y(d.tracked).toFixed(1) + '" width="' + barW.toFixed(1) +
+           '" height="' + (padT + plotH - y(d.tracked)).toFixed(1) + '" rx="2" fill="#D9B79A">' +
+           '<title>' + d.key + ": to Tracking " + d.tracked + '</title></rect>';
+    }
+    if(i % everyN === 0 || i === days.length - 1){
+      g += '<text x="' + cx.toFixed(1) + '" y="' + (H - 10) +
+           '" text-anchor="middle" font-size="11" fill="var(--ink-soft)">' +
+           d.date.toLocaleDateString("en-GB", {day:"2-digit", month:"2-digit"}) + '</text>';
+    }
+  });
+
+  box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" ' +
+    'aria-label="Roles added per day">' + g + '</svg>';
+}
+
+/* ---------------- filter facts ---------------- */
+function renderFacts(){
+  const box = document.getElementById("factsList");
+  if(!box) return;
+  const p = S.profile;
+  const rows = [
+    ["Tracks", p.tracks],
+    ["Target roles", p.roles],
+    ["Skills", p.skills],
+    ["Location & format", p.location],
+    ["Intake & timing", p.intake],
+    ["Sources", p.platforms],
+    ["Hard filters", p.avoid],
+    ["Education", p.education]
+  ].filter(([, v]) => v && String(v).trim());
+  box.innerHTML = rows.map(([k, v]) =>
+    '<div class="fact"><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join("");
+}
+
+/* ---------------- sponsor lists ---------------- */
+function sponsorArr(kind){ return kind === "licensed" ? S.sponsorLicensed : S.sponsorUnlicensed; }
+
+function renderSponsorBlocks(){
+  paintSponsor("spLicensed", "licensed");
+  paintSponsor("spUnlicensed", "unlicensed");
+  wireDrop("spBoxLicensed", "licensed");
+  wireDrop("spBoxUnlicensed", "unlicensed");
+}
+function paintSponsor(boxId, kind){
+  const box = document.getElementById(boxId);
+  if(!box) return;
+  const arr = sponsorArr(kind);
+  box.innerHTML = "";
+  if(!arr.length){
+    const p = document.createElement("p");
+    p.style.cssText = "font-size:12.5px;color:var(--ink-soft)";
+    p.textContent = kind === "licensed"
+      ? "Empty. Fills up when roles with sponsor: licensed are imported."
+      : "Empty. Fills up when roles with sponsor: not_listed are imported.";
+    box.appendChild(p);
+    return;
+  }
+  arr.slice().sort((a,b) => a.localeCompare(b, "en")).forEach(name => {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    chip.draggable = true;
+    chip.ondragstart = (e) => {
+      dragged = {name, from: kind};
+      chip.classList.add("dragging");
+      try{ e.dataTransfer.setData("text/plain", name); e.dataTransfer.effectAllowed = "move"; }catch(err){}
+    };
+    chip.ondragend = () => { chip.classList.remove("dragging"); dragged = null; };
+
+    const label = document.createElement("span");
+    label.textContent = name;
+
+    // Arrow — the same move for touch, where drag-and-drop is awkward.
+    const move = document.createElement("button");
+    move.textContent = kind === "licensed" ? "→" : "←";
+    move.title = kind === "licensed" ? "Move to \u201cno sponsorship rights\u201d" : "Move to \u201cholds a sponsor licence\u201d";
+    move.onclick = () => moveSponsor(name, kind);
+
+    const del = document.createElement("button");
+    del.className = "x";
+    del.textContent = "×";
+    del.setAttribute("aria-label", "Remove " + name);
+    del.onclick = () => delSponsor(name, kind);
+
+    chip.append(label, move, del);
+    box.appendChild(chip);
+  });
+}
+function wireDrop(boxId, kind){
+  const box = document.getElementById(boxId);
+  if(!box || box.dataset.wired) return;
+  box.dataset.wired = "1";
+  box.addEventListener("dragover", (e) => {
+    if(!dragged || dragged.from === kind) return;
+    e.preventDefault();
+    box.classList.add("drop");
+  });
+  box.addEventListener("dragleave", () => box.classList.remove("drop"));
+  box.addEventListener("drop", (e) => {
+    e.preventDefault();
+    box.classList.remove("drop");
+    if(!dragged || dragged.from === kind) return;
+    moveSponsor(dragged.name, dragged.from);
+    dragged = null;
+  });
+}
+async function moveSponsor(name, from){
+  const src = sponsorArr(from);
+  const dst = sponsorArr(from === "licensed" ? "unlicensed" : "licensed");
+  const i = src.findIndex(c => c.toLowerCase() === name.toLowerCase());
+  if(i === -1) return;
+  src.splice(i, 1);
+  if(!dst.some(c => c.toLowerCase() === name.toLowerCase())) dst.push(name);
   await save(); render();
 }
-async function replaceCompanies(){
-  const list = splitCos(document.getElementById("coAdd").value);
-  if(!list.length) return;
-  S.companies = list;
-  document.getElementById("coAdd").value = "";
+async function delSponsor(name, kind){
+  const arr = sponsorArr(kind);
+  const i = arr.findIndex(c => c.toLowerCase() === name.toLowerCase());
+  if(i === -1) return;
+  arr.splice(i, 1);
   await save(); render();
 }
-async function delCo(i){ S.companies.splice(i,1); await save(); render(); }
-function copyCompanyPrompt(btn){
-  const text = "Проверь актуальные вакансии на официальных сайтах этих компаний, " +
-    "по правилам проекта: " + S.companies.join(", ") + ".";
-  copyText(text, btn, "Скопировано ✓");
+async function addSponsor(kind){
+  const input = document.getElementById(kind === "licensed" ? "spAddLicensed" : "spAddUnlicensed");
+  const names = splitCos(input.value);
+  if(!names.length) return;
+  const other = sponsorArr(kind === "licensed" ? "unlicensed" : "licensed");
+  const arr = sponsorArr(kind);
+  names.forEach(n => {
+    const low = n.toLowerCase();
+    const k = other.findIndex(c => c.toLowerCase() === low);
+    if(k !== -1) other.splice(k, 1);
+    if(!arr.some(c => c.toLowerCase() === low)) arr.push(n);
+  });
+  input.value = "";
+  await save(); render();
 }
 
 /* ---------------- quick links ---------------- */
@@ -1219,7 +1635,7 @@ function renderLinksEditor(){
 
     const nameInput = document.createElement("input");
     nameInput.value = l.label;
-    nameInput.placeholder = "Название";
+    nameInput.placeholder = "Label";
     nameInput.style.maxWidth = "220px";
     nameInput.onblur = async () => {
       l.label = nameInput.value.trim() || l.label;
@@ -1237,7 +1653,7 @@ function renderLinksEditor(){
 
     const del = document.createElement("button");
     del.className = "btn ghost small";
-    del.textContent = "Убрать";
+    del.textContent = "Remove";
     del.onclick = async () => { S.links.splice(i, 1); await save(); render(); };
 
     row.append(nameInput, urlInput, del);
@@ -1276,8 +1692,8 @@ function renderHubLinks(){
   }catch(e){
     console.error(e);
     document.querySelector(".wrap").insertAdjacentHTML("afterbegin",
-      '<div class="err" style="margin:24px 0">Запуск прервался: ' + esc(e.message) +
-      '. Открой консоль браузера — там полная трассировка.</div>');
+      '<div class="err" style="margin:24px 0">Startup failed: ' + esc(e.message) +
+      '. Open the browser console for the full trace.</div>');
   }
 })();
 </script>
