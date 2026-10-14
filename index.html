@@ -411,6 +411,7 @@ body{padding-right:52px}
     </div>
     <div class="paste-foot">
       <button class="btn ghost small" onclick="clearPaste()">Clear field</button>
+      <button class="btn ghost small" onclick="dedupeExisting(this)">Merge duplicates</button>
       <button class="btn ghost small" onclick="copyAllForRescore(this)">Copy for re-scoring</button>
       <span class="info">
         <button class="info-dot" aria-label="What the re-scoring button does">i</button>
@@ -421,11 +422,24 @@ body{padding-right:52px}
           Deleted, closed and rejected roles are left out.
         </span>
       </span>
+      <span class="info">
+        <button class="info-dot" aria-label="What the duplicate merge does">i</button>
+        <span class="info-bubble" role="tooltip">
+          Import already drops repeats: a role matches an existing one by company and title,
+          by the job link, or by a near-identical title at the same company. Merge duplicates
+          runs the same check over everything already stored — useful once, for entries added
+          under the older, stricter rule. The richer record wins and keeps its status history.
+        </span>
+      </span>
     </div>
   </div>
   <div class="log hidden" id="inboxLog"></div>
 
-  <div class="filter-bar" style="margin-top:22px">
+  <div class="bar" style="margin-top:22px">
+    <span style="font-size:13px;color:var(--ink-soft)">Start:</span>
+    <div class="seg" id="inboxTrackSeg" role="group" aria-label="Filter by track"></div>
+  </div>
+  <div class="filter-bar">
     <div class="search">
       <input id="inboxSearch" placeholder="Filter by title…" oninput="render()">
     </div>
@@ -448,6 +462,10 @@ body{padding-right:52px}
   <div class="bar">
     <span style="font-size:13px;color:var(--ink-soft)">Status:</span>
     <div class="seg" id="shortStatusSeg" role="group" aria-label="Filter by status"></div>
+  </div>
+  <div class="bar">
+    <span style="font-size:13px;color:var(--ink-soft)">Start:</span>
+    <div class="seg" id="shortTrackSeg" role="group" aria-label="Filter by track"></div>
   </div>
   <div class="filter-bar">
     <div class="search">
@@ -698,6 +716,8 @@ let S = {
 let expanded = new Set();
 let selected = new Set();
 let shortStatusFilter = ""; // "" — all statuses
+let inboxTrackFilter = "";  // "" — all tracks, "now" | "home" | "none"
+let shortTrackFilter = "";
 let dragged = null;
 
 /* ---------------- storage ---------------- */
@@ -856,12 +876,102 @@ function parseJSON(text){
 }
 
 /* ---------------- job helpers ---------------- */
-function normKey(j){
-  return ((j.company||"") + "|" + (j.title||"")).toLowerCase().replace(/[^a-zа-я0-9|]/gi,"");
+/* ---------------- duplicate detection ----------------
+   Одна вакансия приходит от LinkedIn, Indeed и с сайта компании сразу, и каждый раз
+   написана чуть иначе. Поэтому сверяем по трём признакам подряд: нормализованная пара
+   компания+название, затем ссылка без мусора, затем близость названий внутри одной
+   компании. Хватает совпадения по любому. */
+
+const LEGAL_TAIL = /\b(ltd|limited|plc|llc|inc|incorporated|corp|corporation|gmbh|bv|sa|ag|srl|oy|ab|as|uk|group|holdings|technologies|technology|labs)\b/g;
+
+function normCompany(c){
+  return String(c || "").toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(LEGAL_TAIL, " ")
+    .replace(/[^a-z\u0430-\u044f0-9]+/gi, " ")
+    .trim();
 }
+/* «Monzo» и «Monzo Bank» — один работодатель, «Monzo» и «Starling» — нет.
+   Считаем совпадением полное равенство либо вложенность наборов слов. */
+function companyMatch(a, b){
+  const x = normCompany(a), y = normCompany(b);
+  if(!x || !y) return false;
+  if(x === y) return true;
+  const A = new Set(x.split(" ").filter(Boolean));
+  const B = new Set(y.split(" ").filter(Boolean));
+  const small = A.size <= B.size ? A : B;
+  const big = A.size <= B.size ? B : A;
+  for(const w of small){ if(!big.has(w)) return false; }
+  return small.size > 0;
+}
+function normTitle(t){
+  let s = String(t || "").toLowerCase();
+  s = s.replace(/\([^)]*\)/g, " ");                 // (m/f/d), (hybrid), (12-month FTC)
+  s = s.replace(/\[[^\]]*\]/g, " ");
+  s = s.replace(/\b(ref|req|job|vacancy|id)[\s.:#-]*\d[\w-]*/g, " "); // номера заявок
+  s = s.replace(/#\s*\w*\d\w*/g, " ");
+  s = s.replace(/\s[-–—|/@,]\s.*$/, " ");           // хвост после тире: город, отдел
+  s = s.replace(/\b(m\/f\/d|f\/m\/d|x\/f\/m|remote|hybrid|onsite|on-site|full[\s-]?time|part[\s-]?time|permanent|contract|fte)\b/g, " ");
+  s = s.replace(/[^a-z\u0430-\u044f0-9]+/gi, " ");
+  return s.trim();
+}
+function titleTokens(t){
+  return new Set(normTitle(t).split(" ").filter(w => w.length > 1));
+}
+/* Жаккар по словам названия: «Graduate Data Scientist» и «Data Scientist, Graduate»
+   совпадут, а «Data Scientist» и «Data Engineer» — нет. */
+function titleSimilarity(a, b){
+  const A = titleTokens(a), B = titleTokens(b);
+  if(!A.size || !B.size) return 0;
+  let inter = 0;
+  A.forEach(w => { if(B.has(w)) inter++; });
+  return inter / (A.size + B.size - inter);
+}
+function urlKey(u){
+  const raw = String(u || "").trim();
+  if(!/^https?:\/\//i.test(raw)) return "";
+  try{
+    const parsed = new URL(raw);
+    const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+    const path = parsed.pathname.replace(/\/+$/, "").toLowerCase();
+    return host + path;
+  }catch(e){
+    return raw.toLowerCase().split("?")[0].replace(/\/+$/, "");
+  }
+}
+function normKey(j){
+  return normCompany(j.company) + "|" + normTitle(j.title);
+}
+
+/* Ищет, с чем в списке совпадает кандидат. Возвращает саму вакансию и то,
+   по какому признаку совпало — это идёт в лог импорта. */
+function findDuplicate(cand, pool, byKey, byUrl){
+  const exact = byKey.get(normKey(cand));
+  if(exact) return {job: exact, by: "name"};
+
+  const uk = urlKey(cand.url);
+  if(uk && byUrl.has(uk)) return {job: byUrl.get(uk), by: "link"};
+
+  if(normCompany(cand.company)){
+    for(const j of pool){
+      if(!companyMatch(cand.company, j.company)) continue;
+      const sim = titleSimilarity(cand.title, j.title);
+      const a = normTitle(cand.title), b = normTitle(j.title);
+      // Либо названия почти совпадают по словам, либо одно целиком входит в другое
+      // («Data Scientist» и «Data Scientist Graduate Programme»).
+      if(sim >= 0.75 || (a && b && (a.includes(b) || b.includes(a)))) return {job: j, by: "title"};
+    }
+  }
+  return null;
+}
+
 function addJobs(list){
   let added = 0, updated = 0;
+  const dups = {name: 0, link: 0, title: 0};
   const byKey = new Map(S.jobs.map(j => [normKey(j), j]));
+  const byUrl = new Map();
+  S.jobs.forEach(j => { const u = urlKey(j.url); if(u) byUrl.set(u, j); });
+
   for(const raw of list){
     if(!raw || !raw.title || !raw.company) continue;
     const conf = ["low","medium","high"].includes(raw.confidence) ? raw.confidence : "low";
@@ -889,15 +999,24 @@ function addJobs(list){
       status: "new", found: Date.now()
     };
     noteSponsor(j.company, fields.sponsor);
-    const k = normKey(j);
-    const existing = byKey.get(k);
 
-    if(existing){
+    // Сверяем и с тем, что уже лежало, и с тем, что пришло в этой же вставке:
+    // S.jobs пополняется прямо в цикле, так что дубли внутри одной пачки тоже ловятся.
+    const hit = findDuplicate(j, S.jobs, byKey, byUrl);
+    if(hit){
+      const existing = hit.job;
+      dups[hit.by]++;
       let touched = false;
       // Platform is sticky: an empty answer on re-scoring must not erase
       // what was already determined earlier.
       if(platform && platform !== existing.platform){
         existing.platform = platform;
+        touched = true;
+      }
+      // Прямая ссылка лучше её отсутствия: если дубль принёс ссылку, а у записи её нет — берём.
+      if(!existing.url && fields.url){
+        existing.url = fields.url;
+        byUrl.set(urlKey(fields.url), existing);
         touched = true;
       }
       // An explicit "role closed" signal from bulk re-scoring can always be applied.
@@ -910,15 +1029,71 @@ function addJobs(list){
       // Never roll high back down to low or medium.
       const rank = {low:0, medium:1, high:2};
       if(rank[conf] >= rank[existing.confidence || "low"]){
-        Object.assign(existing, fields);
+        const keepUrl = existing.url || fields.url;
+        Object.assign(existing, fields, {url: keepUrl});
+        byKey.set(normKey(existing), existing);
         touched = true;
       }
       if(touched) updated++;
       continue;
     }
-    byKey.set(k, j); S.jobs.push(j); added++;
+
+    byKey.set(normKey(j), j);
+    const nu = urlKey(j.url);
+    if(nu) byUrl.set(nu, j);
+    S.jobs.push(j);
+    added++;
   }
-  return {added, updated};
+  return {added, updated, dups, skipped: dups.name + dups.link + dups.title};
+}
+
+/* Разовая чистка того, что уже накопилось: старые записи заводились по более грубому
+   правилу, поэтому часть дублей могла осесть в списке до этого обновления. */
+function mergePair(keep, drop){
+  if(!keep.url && drop.url) keep.url = drop.url;
+  if(!keep.desc && drop.desc) keep.desc = drop.desc;
+  if(!keep.platform && drop.platform) keep.platform = drop.platform;
+  if(!keep.deadline && drop.deadline) keep.deadline = drop.deadline;
+  if(!keep.salary && drop.salary) keep.salary = drop.salary;
+  if(drop.note && drop.note.trim() && drop.note !== keep.note){
+    keep.note = (keep.note ? keep.note + "\n" : "") + drop.note;
+  }
+  const log = (keep.statusLog || []).concat(drop.statusLog || []);
+  const seen = new Set();
+  keep.statusLog = log.sort((a,b) => a.at - b.at)
+    .filter(e => { const k = e.status + "|" + e.at; if(seen.has(k)) return false; seen.add(k); return true; });
+  keep.found = Math.min(keep.found || Date.now(), drop.found || Date.now());
+}
+/* Что считать главной записью: продвинутый статус важнее, затем уверенность, затем наличие
+   описания и ссылки. Терять статус «подана» из-за дубля-новичка нельзя. */
+function dupRank(j){
+  const st = ["hidden","new","saved","applying","applied","test","interview","rejected","closed"].indexOf(j.status);
+  const conf = {low:0, medium:1, high:2}[j.confidence || "low"];
+  return st * 100 + conf * 10 + (j.desc ? 4 : 0) + (j.url ? 2 : 0) + (j.note ? 1 : 0);
+}
+async function dedupeExisting(btn){
+  const original = btn ? btn.textContent : null;
+  const keepers = [];
+  const byKey = new Map(), byUrl = new Map();
+  let removed = 0;
+
+  S.jobs.slice().sort((a,b) => dupRank(b) - dupRank(a)).forEach(j => {
+    const hit = findDuplicate(j, keepers, byKey, byUrl);
+    if(hit){ mergePair(hit.job, j); removed++; return; }
+    keepers.push(j);
+    byKey.set(normKey(j), j);
+    const u = urlKey(j.url);
+    if(u) byUrl.set(u, j);
+  });
+
+  if(removed){
+    S.jobs = keepers;
+    await save(); render();
+  }
+  if(btn){
+    btn.textContent = removed ? "Merged " + removed : "No duplicates found";
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  }
 }
 function scoreColor(f){
   if(f >= 75) return "var(--teal-deep)";
@@ -1211,8 +1386,10 @@ function render(){
   const q = (document.getElementById("inboxSearch")?.value || "");
   const coQ = (document.getElementById("inboxCompany")?.value || "");
   const skillsQ = (document.getElementById("inboxSkills")?.value || "");
+  inboxTrackFilter = renderTrackSeg("inboxTrackSeg", queue, inboxTrackFilter, "setInboxTrackFilter");
   const shown = queue.filter(j =>
-    matches(j, q) && matchesCompany(j, coQ) && matchesSkills(j, skillsQ));
+    matches(j, q) && matchesCompany(j, coQ) && matchesSkills(j, skillsQ) &&
+    matchesTrack(j, inboxTrackFilter));
   document.getElementById("inboxCount").textContent = shown.length + " of " + queue.length + " shown";
 
   const bulkBox = document.getElementById("inboxBulk");
@@ -1231,9 +1408,10 @@ function render(){
   const sq = (document.getElementById("shortSearch")?.value || "");
   const scoQ = (document.getElementById("shortCompany")?.value || "");
   const byStatus = shortStatusFilter ? short.filter(j => j.status === shortStatusFilter) : short;
+  shortTrackFilter = renderTrackSeg("shortTrackSeg", byStatus, shortTrackFilter, "setShortTrackFilter");
   const shortPl = fillFieldOptions("shortPlatform", byStatus, "platform", "All platforms");
   const shortShown = byStatus.filter(j => matches(j, sq) && matchesCompany(j, scoQ) &&
-    (!shortPl || j.platform === shortPl));
+    matchesTrack(j, shortTrackFilter) && (!shortPl || j.platform === shortPl));
   fill("inboxList", shown.slice().sort((a,b) => b.fit - a.fit), "inbox");
   fill("shortList", shortShown.sort((a,b) => b.fit - a.fit), "short");
 
@@ -1271,6 +1449,36 @@ function logTo(id, msg){
   el.textContent += msg + "\n";
   el.scrollTop = el.scrollHeight;
 }
+/* Два режима поиска живут в одном списке, поэтому им нужен свой переключатель:
+   "now" — немедленный старт и временные роли, "home" — постоянные и graduate-треки.
+   Кнопка "No track" появляется, только если в списке есть вакансии без метки. */
+function matchesTrack(j, f){
+  if(!f) return true;
+  if(f === "none") return j.track !== "now" && j.track !== "home";
+  return j.track === f;
+}
+function setInboxTrackFilter(v){ inboxTrackFilter = v; render(); }
+function setShortTrackFilter(v){ shortTrackFilter = v; render(); }
+function renderTrackSeg(containerId, list, current, setterName){
+  const seg = document.getElementById(containerId);
+  if(!seg) return current;
+  const n = {
+    now: list.filter(j => j.track === "now").length,
+    home: list.filter(j => j.track === "home").length,
+    none: list.filter(j => j.track !== "now" && j.track !== "home").length
+  };
+  const opts = [["","All (" + list.length + ")"],
+                ["now","Immediate / contract (" + n.now + ")"],
+                ["home","Graduate & permanent (" + n.home + ")"]];
+  if(n.none) opts.push(["none","No track (" + n.none + ")"]);
+  // Метка пропала из списка — возвращаемся на «All», иначе экран выглядит пустым без причины.
+  if(current === "none" && !n.none) current = "";
+  seg.innerHTML = opts.map(([v,label]) =>
+    '<button aria-pressed="' + (current === v ? "true" : "false") +
+    '" onclick="' + setterName + '(\'' + v + '\')">' + label + '</button>').join("");
+  return current;
+}
+
 function setShortStatusFilter(st){ shortStatusFilter = st; render(); }
 function renderStatusSeg(){
   const seg = document.getElementById("shortStatusSeg");
@@ -1306,9 +1514,14 @@ async function importJSON(){
   }
   const r = addJobs(list);
   await save(); render();
+  const byRule = [];
+  if(r.dups.name) byRule.push(r.dups.name + " by name");
+  if(r.dups.link) byRule.push(r.dups.link + " by link");
+  if(r.dups.title) byRule.push(r.dups.title + " by similar title");
   logTo("inboxLog", "Import: received " + list.length + ", new " + r.added +
-        ", re-scored " + r.updated +
-        ", duplicates " + (list.length - r.added - r.updated) + ".");
+        ", duplicates skipped " + r.skipped +
+        (byRule.length ? " (" + byRule.join(", ") + ")" : "") +
+        ", of them updated with fresher data " + r.updated + ".");
   document.getElementById("pasteBox").value = "";
 }
 function clearPaste(){ document.getElementById("pasteBox").value = ""; setErr("inboxErr",""); }
