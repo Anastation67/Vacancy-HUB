@@ -124,6 +124,33 @@ label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:5px}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--teal);color:#fff}
 
+/* ---------- sticky filter strip ----------
+   Прилипает под шапкой, чтобы при длинном списке не отматывать наверх ради фильтра.
+   --topbar-h считается в JS: высота шапки зависит от шрифта и ширины экрана. */
+.sticky-filters{
+  position:sticky;top:var(--topbar-h,54px);z-index:30;
+  background:var(--paper);padding:12px 0 2px;margin-bottom:10px;
+  border-bottom:1px solid var(--line);
+}
+.sticky-filters .bar:last-of-type,.sticky-filters .filter-bar{margin-bottom:10px}
+.sticky-filters .seg{flex-wrap:wrap}
+.filter-count{font-size:13px;color:var(--ink-soft);padding-bottom:8px}
+@media (max-width:620px){
+  .sticky-filters{padding-top:8px}
+  .sticky-filters .seg button{padding:6px 9px;font-size:12px}
+}
+
+/* ---------- label filter ---------- */
+.lab-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-bottom:10px}
+.lab-bar>span.lab-title{font-size:13px;color:var(--ink-soft);margin-right:2px}
+.lab{
+  font-size:11.5px;border:1px solid var(--line);border-radius:6px;padding:3px 9px;
+  background:var(--surface);color:var(--ink-soft);
+}
+.lab:hover{border-color:var(--ink-soft);color:var(--ink)}
+.lab[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.lab b{font-weight:500;opacity:.65;margin-left:4px}
+
 /* ---------- filters ---------- */
 .filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
 .filter-bar .search{margin-bottom:0;flex:1 1 220px}
@@ -323,6 +350,26 @@ body{padding-right:52px}
 .proj-item li{margin-bottom:6px}
 .proj-item b{font-weight:600}
 
+/* ---------- notes ---------- */
+.notes{display:flex;flex-direction:column;gap:12px}
+.note-card{
+  border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  padding:14px 16px;box-shadow:0 1px 2px rgba(46,39,33,.03);
+}
+.note-card.pinned{border-color:#E0BC9E;background:var(--teal-wash)}
+.note-top{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.note-top input{
+  flex:1 1 auto;border:0;background:none;padding:4px 0;
+  font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:16px;
+}
+.note-top input:focus{outline:none;border-bottom:1px solid var(--teal)}
+.note-card textarea{min-height:110px;font-size:13.5px;background:var(--paper)}
+.note-foot{display:flex;gap:10px;align-items:center;margin-top:8px;font-size:12px;color:var(--ink-soft)}
+.note-foot .spacer{margin-left:auto}
+.icon-btn{background:none;border:0;color:var(--ink-soft);font-size:14px;padding:2px 5px;border-radius:6px}
+.icon-btn:hover{background:var(--surface-2);color:var(--ink)}
+.icon-btn.on{color:var(--teal-deep)}
+
 /* ---------- sponsor blocks ---------- */
 .sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .sp-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
@@ -435,19 +482,22 @@ body{padding-right:52px}
   </div>
   <div class="log hidden" id="inboxLog"></div>
 
-  <div class="bar" style="margin-top:22px">
-    <span style="font-size:13px;color:var(--ink-soft)">Start:</span>
-    <div class="seg" id="inboxTrackSeg" role="group" aria-label="Filter by track"></div>
-  </div>
-  <div class="filter-bar">
-    <div class="search">
-      <input id="inboxSearch" placeholder="Filter by title…" oninput="render()">
+  <div class="sticky-filters">
+    <div class="bar">
+      <span style="font-size:13px;color:var(--ink-soft)">Start:</span>
+      <div class="seg" id="inboxTrackSeg" role="group" aria-label="Filter by track"></div>
     </div>
-    <input id="inboxCompany" placeholder="Company" style="min-width:180px;flex:0 1 220px" oninput="render()">
-    <input id="inboxSkills" placeholder="Skills: SQL, Python, statistics…"
-           style="min-width:220px;flex:1 1 240px" oninput="render()">
+    <div class="filter-bar">
+      <div class="search">
+        <input id="inboxSearch" placeholder="Filter by title…" oninput="render()">
+      </div>
+      <input id="inboxCompany" placeholder="Company" style="min-width:180px;flex:0 1 220px" oninput="render()">
+      <input id="inboxSkills" placeholder="Skills: SQL, Python, statistics…"
+             style="min-width:220px;flex:1 1 240px" oninput="render()">
+    </div>
+    <div class="lab-bar" id="inboxLabels"></div>
+    <div class="filter-count" id="inboxCount"></div>
   </div>
-  <div style="font-size:13px;color:var(--ink-soft);margin:-4px 0 14px" id="inboxCount"></div>
   <div id="inboxBulk"></div>
   <div class="jobs" id="inboxList"></div>
 </section>
@@ -459,24 +509,43 @@ body{padding-right:52px}
     <p>Change status with the buttons under each role. Notes save when you leave the field.</p>
     <button class="btn ghost small" onclick="copyTracking(this)">Copy everything for the chat</button>
   </div>
-  <div class="bar">
-    <span style="font-size:13px;color:var(--ink-soft)">Status:</span>
-    <div class="seg" id="shortStatusSeg" role="group" aria-label="Filter by status"></div>
+  <div class="sticky-filters">
+    <div class="bar">
+      <span style="font-size:13px;color:var(--ink-soft)">Status:</span>
+      <div class="seg" id="shortStatusSeg" role="group" aria-label="Filter by status"></div>
+    </div>
+    <div class="bar">
+      <span style="font-size:13px;color:var(--ink-soft)">Start:</span>
+      <div class="seg" id="shortTrackSeg" role="group" aria-label="Filter by track"></div>
+    </div>
+    <div class="filter-bar">
+      <div class="search">
+        <input id="shortSearch" placeholder="Filter by title…" oninput="render()">
+      </div>
+      <input id="shortCompany" placeholder="Company" style="min-width:180px;flex:0 1 220px" oninput="render()">
+      <select id="shortPlatform" onchange="render()">
+        <option value="">All platforms</option>
+      </select>
+    </div>
+    <div class="lab-bar" id="shortLabels"></div>
+    <div class="filter-count" id="shortCount"></div>
   </div>
-  <div class="bar">
-    <span style="font-size:13px;color:var(--ink-soft)">Start:</span>
-    <div class="seg" id="shortTrackSeg" role="group" aria-label="Filter by track"></div>
+  <div class="jobs" id="shortList"></div>
+</section>
+
+<!-- ============ NOTES ============ -->
+<section id="v-notes" class="section hidden">
+  <div class="section-head">
+    <h2>Notes</h2>
+    <p>Anything that is not tied to one role: interview prep, questions to ask, follow-ups.</p>
+    <button class="btn small" onclick="addNote()">New note</button>
   </div>
   <div class="filter-bar">
     <div class="search">
-      <input id="shortSearch" placeholder="Filter by title…" oninput="render()">
+      <input id="notesSearch" placeholder="Filter notes…" oninput="render()">
     </div>
-    <input id="shortCompany" placeholder="Company" style="min-width:180px;flex:0 1 220px" oninput="render()">
-    <select id="shortPlatform" onchange="render()">
-      <option value="">All platforms</option>
-    </select>
   </div>
-  <div class="jobs" id="shortList"></div>
+  <div class="notes" id="notesList"></div>
 </section>
 
 <!-- ============ PROFILE ============ -->
@@ -707,6 +776,7 @@ let S = {
   profile: {...DEFAULT_PROFILE},
   companies: [...SEED_COMPANIES],
   links: DEFAULT_LINKS.map(l => ({...l})),
+  notes: [],
   sponsorLicensed: [],
   sponsorUnlicensed: [],
   jobs: []
@@ -718,6 +788,8 @@ let selected = new Set();
 let shortStatusFilter = ""; // "" — all statuses
 let inboxTrackFilter = "";  // "" — all tracks, "now" | "home" | "none"
 let shortTrackFilter = "";
+let inboxLabelFilter = new Set();
+let shortLabelFilter = new Set();
 let dragged = null;
 
 /* ---------------- storage ---------------- */
@@ -779,6 +851,7 @@ async function load(){
   S.links.forEach(l => { if(RU_LINKS[l.label]) l.label = RU_LINKS[l.label]; });
   if(!Array.isArray(S.companies) || !S.companies.length) S.companies = [...SEED_COMPANIES];
   if(!Array.isArray(S.links)) S.links = DEFAULT_LINKS.map(l => ({...l}));
+  if(!Array.isArray(S.notes)) S.notes = [];
   if(!Array.isArray(S.sponsorLicensed)) S.sponsorLicensed = [];
   if(!Array.isArray(S.sponsorUnlicensed)) S.sponsorUnlicensed = [];
   if(!Array.isArray(S.jobs)) S.jobs = [];
@@ -1387,9 +1460,11 @@ function render(){
   const coQ = (document.getElementById("inboxCompany")?.value || "");
   const skillsQ = (document.getElementById("inboxSkills")?.value || "");
   inboxTrackFilter = renderTrackSeg("inboxTrackSeg", queue, inboxTrackFilter, "setInboxTrackFilter");
-  const shown = queue.filter(j =>
+  const byTrack = queue.filter(j => matchesTrack(j, inboxTrackFilter));
+  renderLabelBar("inboxLabels", byTrack, inboxLabelFilter, "inbox");
+  const shown = byTrack.filter(j =>
     matches(j, q) && matchesCompany(j, coQ) && matchesSkills(j, skillsQ) &&
-    matchesTrack(j, inboxTrackFilter));
+    matchesLabels(j, inboxLabelFilter));
   document.getElementById("inboxCount").textContent = shown.length + " of " + queue.length + " shown";
 
   const bulkBox = document.getElementById("inboxBulk");
@@ -1410,13 +1485,18 @@ function render(){
   const byStatus = shortStatusFilter ? short.filter(j => j.status === shortStatusFilter) : short;
   shortTrackFilter = renderTrackSeg("shortTrackSeg", byStatus, shortTrackFilter, "setShortTrackFilter");
   const shortPl = fillFieldOptions("shortPlatform", byStatus, "platform", "All platforms");
-  const shortShown = byStatus.filter(j => matches(j, sq) && matchesCompany(j, scoQ) &&
-    matchesTrack(j, shortTrackFilter) && (!shortPl || j.platform === shortPl));
+  const shortByTrack = byStatus.filter(j => matchesTrack(j, shortTrackFilter));
+  renderLabelBar("shortLabels", shortByTrack, shortLabelFilter, "short");
+  const shortShown = shortByTrack.filter(j => matches(j, sq) && matchesCompany(j, scoQ) &&
+    matchesLabels(j, shortLabelFilter) && (!shortPl || j.platform === shortPl));
+  const shortCount = document.getElementById("shortCount");
+  if(shortCount) shortCount.textContent = shortShown.length + " of " + short.length + " shown";
   fill("inboxList", shown.slice().sort((a,b) => b.fit - a.fit), "inbox");
   fill("shortList", shortShown.sort((a,b) => b.fit - a.fit), "short");
 
   renderLinksEditor();
   renderHubLinks();
+  renderNotes();
   renderFacts();
   renderSponsorBlocks();
   renderChart();
@@ -1427,12 +1507,19 @@ function render(){
 }
 
 /* ---------------- nav ---------------- */
-const VIEWS = [["hub","Home"],["inbox","Inbox"],["shortlist","Tracking"],["profile","Profile"],["companies","Companies"]];
+const VIEWS = [["hub","Home"],["inbox","Inbox"],["shortlist","Tracking"],["notes","Notes"],["profile","Profile"],["companies","Companies"]];
 function go(v){
   VIEWS.forEach(([id]) => document.getElementById("v-" + id).classList.toggle("hidden", id !== v));
   document.querySelectorAll("#rail .petal").forEach(b =>
     b.setAttribute("aria-current", b.dataset.v === v ? "page" : "false"));
   try{ window.scrollTo(0, 0); }catch(e){}
+}
+/* Высота шапки зависит от шрифта и ширины, поэтому замеряем её, а не зашиваем число:
+   иначе липкая полоса фильтров либо наедет на шапку, либо оставит щель. */
+function measureTopbar(){
+  const bar = document.querySelector(".topbar");
+  if(!bar) return;
+  document.documentElement.style.setProperty("--topbar-h", bar.offsetHeight + "px");
 }
 function buildNav(){
   document.getElementById("rail").innerHTML = VIEWS.map(([id,label]) =>
@@ -1457,6 +1544,69 @@ function matchesTrack(j, f){
   if(f === "none") return j.track !== "now" && j.track !== "home";
   return j.track === f;
 }
+/* ---------------- label filter ----------------
+   Те же пометки, что висят на карточке вакансии, работают как фильтр. Трек сюда
+   не входит — у него свой переключатель выше, дублировать его смысла нет.
+   Несколько выбранных пометок складываются по «и»: каждая сужает список. */
+function jobLabels(j){
+  const out = [];
+  if(j.deadline) out.push({key: "deadline", label: "has a deadline"});
+  const conf = j.confidence || "low";
+  out.push({key: "conf:" + conf,
+            label: {low:"from alert only", medium:"partial", high:"from description"}[conf]});
+  if(j.sponsor) out.push({key: "sponsor:" + j.sponsor,
+    label: {licensed:"sponsor licence held", not_listed:"not in sponsor register",
+            undisclosed:"employer undisclosed", unchecked:"register not checked"}[j.sponsor]});
+  if(j.platform) out.push({key: "platform:" + j.platform, label: j.platform});
+  if(j.desc && j.desc.trim()) out.push({key: "desc", label: "description added"});
+  return out;
+}
+function matchesLabels(j, set){
+  if(!set.size) return true;
+  const keys = new Set(jobLabels(j).map(l => l.key));
+  for(const k of set){ if(!keys.has(k)) return false; }
+  return true;
+}
+function toggleLabel(which, key){
+  const set = which === "inbox" ? inboxLabelFilter : shortLabelFilter;
+  set.has(key) ? set.delete(key) : set.add(key);
+  render();
+}
+function clearLabels(which){
+  (which === "inbox" ? inboxLabelFilter : shortLabelFilter).clear();
+  render();
+}
+/* Счётчик у пометки показывает, сколько останется, если её добавить к уже выбранным,
+   а не сколько всего таких вакансий: иначе кнопка обещает больше, чем даёт. */
+function renderLabelBar(containerId, list, set, which){
+  const box = document.getElementById(containerId);
+  if(!box) return;
+  const counts = new Map(), names = new Map();
+  list.forEach(j => {
+    const ls = jobLabels(j);
+    const keys = new Set(ls.map(l => l.key));
+    ls.forEach(l => {
+      names.set(l.key, l.label);
+      let ok = true;
+      for(const k of set){ if(k !== l.key && !keys.has(k)){ ok = false; break; } }
+      if(ok) counts.set(l.key, (counts.get(l.key) || 0) + 1);
+    });
+  });
+  // Выбранная пометка остаётся на экране, даже если под неё уже ничего не попадает,
+  // иначе её нечем снять.
+  set.forEach(k => { if(!counts.has(k)) counts.set(k, 0); });
+  const keys = [...counts.keys()].sort((a,b) => (names.get(a)||a).localeCompare(names.get(b)||b, "en"));
+  if(!keys.length){ box.innerHTML = ""; return; }
+
+  let html = '<span class="lab-title">Labels:</span>';
+  html += keys.map(k =>
+    '<button class="lab" aria-pressed="' + (set.has(k) ? "true" : "false") +
+    '" onclick="toggleLabel(\'' + which + '\',\'' + esc(k).replace(/'/g, "&#39;") + '\')">' +
+    esc(names.get(k) || k) + '<b>' + counts.get(k) + '</b></button>').join("");
+  if(set.size) html += '<button class="lab" onclick="clearLabels(\'' + which + '\')">clear</button>';
+  box.innerHTML = html;
+}
+
 function setInboxTrackFilter(v){ inboxTrackFilter = v; render(); }
 function setShortTrackFilter(v){ shortTrackFilter = v; render(); }
 function renderTrackSeg(containerId, list, current, setterName){
@@ -1837,6 +1987,110 @@ async function addSponsor(kind){
   await save(); render();
 }
 
+/* ---------------- notes ----------------
+   Отдельные заметки, не привязанные к вакансии. Текст сохраняется при уходе из поля,
+   как и заметка внутри карточки, — автосохранение на каждый символ дёргало бы запись
+   в хранилище на каждую букву. */
+async function addNote(){
+  S.notes.unshift({
+    id: "n" + Date.now() + Math.random().toString(36).slice(2,6),
+    title: "", body: "", pinned: false,
+    created: Date.now(), updated: Date.now()
+  });
+  await save(); render();
+  go("notes");
+  const first = document.querySelector("#notesList .note-top input");
+  if(first) first.focus();
+}
+async function saveNoteField(id, field, value){
+  const n = S.notes.find(x => x.id === id);
+  if(!n || n[field] === value) return;
+  n[field] = value;
+  n.updated = Date.now();
+  await save(); render();
+}
+async function toggleNotePin(id){
+  const n = S.notes.find(x => x.id === id);
+  if(!n) return;
+  n.pinned = !n.pinned;
+  await save(); render();
+}
+async function deleteNote(id){
+  const n = S.notes.find(x => x.id === id);
+  if(!n) return;
+  // Спрашиваем, только если есть что терять: пустую заметку удаляем молча.
+  if((n.title + n.body).trim() && !confirm("Delete this note? This cannot be undone.")) return;
+  S.notes = S.notes.filter(x => x.id !== id);
+  await save(); render();
+}
+function renderNotes(){
+  const box = document.getElementById("notesList");
+  if(!box) return;
+  const q = (document.getElementById("notesSearch")?.value || "").trim().toLowerCase();
+  const list = S.notes.filter(n =>
+    !q || (n.title + " " + n.body).toLowerCase().includes(q));
+  // Закреплённые наверх, дальше по времени последней правки.
+  list.sort((a,b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.updated - a.updated);
+
+  box.innerHTML = "";
+  if(!list.length){
+    const e = document.createElement("div");
+    e.className = "empty";
+    e.innerHTML = S.notes.length
+      ? "<b>Nothing matches</b>No note contains that text."
+      : "<b>No notes yet</b>Hit New note and start writing.";
+    box.appendChild(e);
+    return;
+  }
+
+  list.forEach(n => {
+    const card = document.createElement("div");
+    card.className = "note-card" + (n.pinned ? " pinned" : "");
+
+    const top = document.createElement("div");
+    top.className = "note-top";
+    const title = document.createElement("input");
+    title.value = n.title;
+    title.placeholder = "Title";
+    title.onblur = () => saveNoteField(n.id, "title", title.value);
+
+    const pin = document.createElement("button");
+    pin.className = "icon-btn" + (n.pinned ? " on" : "");
+    pin.textContent = n.pinned ? "★" : "☆";
+    pin.title = n.pinned ? "Unpin" : "Pin to top";
+    pin.onclick = () => toggleNotePin(n.id);
+
+    const del = document.createElement("button");
+    del.className = "icon-btn";
+    del.textContent = "×";
+    del.title = "Delete note";
+    del.onclick = () => deleteNote(n.id);
+
+    top.append(title, pin, del);
+
+    const body = document.createElement("textarea");
+    body.value = n.body;
+    body.placeholder = "Write here…";
+    body.onblur = () => saveNoteField(n.id, "body", body.value);
+
+    const foot = document.createElement("div");
+    foot.className = "note-foot";
+    const stamp = document.createElement("span");
+    stamp.textContent = "edited " + new Date(n.updated).toLocaleDateString("en-GB") +
+      ", " + new Date(n.updated).toLocaleTimeString("en-GB", {hour:"2-digit", minute:"2-digit"});
+    const sp = document.createElement("span");
+    sp.className = "spacer";
+    const copy = document.createElement("button");
+    copy.className = "btn ghost small";
+    copy.textContent = "Copy";
+    copy.onclick = () => copyText((n.title ? n.title + "\n\n" : "") + n.body, copy, "Copied ✓");
+    foot.append(stamp, sp, copy);
+
+    card.append(top, body, foot);
+    box.appendChild(card);
+  });
+}
+
 /* ---------------- quick links ---------------- */
 function renderLinksEditor(){
   const box = document.getElementById("linksEditor");
@@ -1898,6 +2152,8 @@ function renderHubLinks(){
 (async function(){
   try{
     buildNav();
+    measureTopbar();
+    window.addEventListener("resize", measureTopbar);
     await load();
     loadProfileForm();
     render();
